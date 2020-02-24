@@ -1,0 +1,4 @@
+INDEX VERSION 1.131+C:\Users\danci\OneDrive\Documents\CS465\src\.metadata\.plugins\org.eclipse.jdt.core
+132620216.index
+2528165930.index
+1671692264.index
