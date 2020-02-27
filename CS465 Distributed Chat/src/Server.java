@@ -4,7 +4,7 @@
 
 import java.io.*; 
 import java.util.*; 
-import java.net.*; 
+import java.net.*;
 
 // Server class 
 public class Server 
@@ -16,50 +16,50 @@ public class Server
    // counter for clients 
    private static int numConnections;
 
-   public static void main(String[] args) throws IOException 
-   { 
-      // server is listening on port 1234 
-      ServerSocket serverSocket = new ServerSocket(9007); 
-      
-      Socket socket; 
-      
-      // running infinite loop for getting 
-      // client request 
-      while (true) 
-      { 
-         // Accept the incoming request 
-         socket = serverSocket.accept(); 
+   public static void main(String[] args) throws IOException
+   {
+      // server is listening on port 1234
+      ServerSocket serverSocket = new ServerSocket(9007);
 
-         System.out.println("New client request received:\n"  + socket); 
-         
-         // Obtain input and output streams 
-         BufferedReader dis = new BufferedReader(new InputStreamReader(socket.getInputStream())); 
+      Socket socket;
+
+      // running infinite loop for getting
+      // client request
+      while (true)
+      {
+         // Accept the incoming request
+         socket = serverSocket.accept();
+
+         System.out.println("New client request received:\n"  + socket);
+
+         // Obtain input and output streams
+         BufferedReader dis = new BufferedReader(new InputStreamReader(socket.getInputStream()));
          DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-         dos.writeUTF("You are Client " + numConnections + "\r\n\r\n");
+         dos.writeBytes("You are Client " + numConnections + "\r\n\r\n");
          dos.flush();
-         
-         System.out.println("Creating a new handler for this client..."); 
 
-         // Create a new handler object for handling this request. 
-         ClientHandler clientConnection = new ClientHandler(socket, "Client " + numConnections, dis, dos); 
+         System.out.println("Creating a new handler for this client...");
 
-         // Create a new Thread with this object. 
-         Thread clientThread = new Thread(clientConnection); 
-         
-         System.out.println("Adding this client to active client list"); 
+         // Create a new handler object for handling this request.
+         ClientHandler clientConnection = new ClientHandler(socket, "Client " + numConnections, dis, dos);
 
-         // add this client to active clients list 
-         ar.add(clientConnection); 
+         // Create a new Thread with this object.
+         Thread clientThread = new Thread(clientConnection);
 
-         // start the thread. 
-         clientThread.start(); 
+         System.out.println("Adding this client to active client list");
 
-         // increment numConnections for new client. 
-         // numConnections is used for naming only, and can be replaced 
-         // by any naming scheme 
-         numConnections++; 
+         // add this client to active clients list
+         ar.add(clientConnection);
+
+         // start the thread.
+         clientThread.start();
+
+         // increment numConnections for new client.
+         // numConnections is used for naming only, and can be replaced
+         // by any naming scheme
+         numConnections++;
 
       }
-   } 
+   }
 } 
 
