@@ -32,7 +32,7 @@ public class Server
 
          System.out.println("New client request received:\n"  + socket); 
          
-         // obtain input and output streams 
+         // Obtain input and output streams 
          BufferedReader dis = new BufferedReader(new InputStreamReader(socket.getInputStream())); 
          DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
          dos.writeUTF("You are Client " + numConnections + "\r\n\r\n");
