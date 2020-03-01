@@ -1,2 +1,6 @@
 /ClientHandler.class
 /Server.class
+/ReadThread.class
+/GroupChat.class
+/DistributedChat.class
+/DCClientHandler.class
