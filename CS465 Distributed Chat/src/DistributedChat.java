@@ -20,10 +20,10 @@ public class DistributedChat
 				System.out.print("Enter your name: "); 
 				name = sc.nextLine(); 
 				MulticastSocket socket = new MulticastSocket(port);
-				socket.setInterface(group);
+            socket.setBroadcast(true);
 			
 				// Since we are deploying 
-				socket.setTimeToLive(1); 
+				socket.setTimeToLive(0); 
 				//this on localhost only (For a subnet set it as 1) 
 				
 				socket.joinGroup(group); 

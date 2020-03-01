@@ -4,3 +4,4 @@
 /GroupChat.class
 /DistributedChat.class
 /DCClientHandler.class
+/UDPMulticastServer.class
