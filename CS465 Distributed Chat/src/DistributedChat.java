@@ -19,10 +19,11 @@ public class DistributedChat
 				Scanner sc = new Scanner(System.in); 
 				System.out.print("Enter your name: "); 
 				name = sc.nextLine(); 
-				MulticastSocket socket = new MulticastSocket(port); 
+				MulticastSocket socket = new MulticastSocket(port);
+				socket.setInterface(group);
 			
 				// Since we are deploying 
-				socket.setTimeToLive(0); 
+				socket.setTimeToLive(1); 
 				//this on localhost only (For a subnet set it as 1) 
 				
 				socket.joinGroup(group); 
