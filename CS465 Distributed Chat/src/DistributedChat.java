@@ -20,7 +20,8 @@ public class DistributedChat extends Frame implements Runnable {
     // name
     String name;
 
-    public DistributedChat() {
+    public DistributedChat() 
+    {
         // create field objects
         sockets = new ArrayList<>();
         lines = new StringBuilder();
@@ -58,19 +59,27 @@ public class DistributedChat extends Frame implements Runnable {
     }
 
     // method called by key listener
-    public void keyTyped(KeyEvent ke) {
+    public void keyTyped(KeyEvent ke) 
+    {
         int i;
         String msg;
-        synchronized (sockets) {
+        
+        synchronized (sockets) 
+        {
             // iterate through all sockets, and flush character through
-            for (i = 0; i < sockets.size(); i++) {
-                try {
+            for (i = 0; i < sockets.size(); i++) 
+            {
+                try 
+                {
                     Socket s = sockets.get(i);
                     PrintWriter pw = new PrintWriter(s.getOutputStream());
                     pw.print(name + ": ");
                     pw.println(String.valueOf(ke.getKeyChar()));
                     pw.flush();
-                } catch (IOException ex) {
+                } 
+
+                catch (IOException ex) 
+                {
                     // remove socket, continue to any next if exception occurs
                     // (socket closed)
                     ex.printStackTrace();
@@ -87,30 +96,49 @@ public class DistributedChat extends Frame implements Runnable {
         // otherwise put character into buffer,
         // and show updated buffer
         if (ch == 8 && lines.length() > 0)
-            lines.delete(lines.length() - 1, lines.length());
+        {
+           lines.delete(lines.length() - 1, lines.length());
+        }
+        
         else
-            lines.append((char)ch);
-        synchronized (textArea) {
+        {
+           lines.append((char)ch);
+        }
+        
+        synchronized (textArea) 
+        {
             textArea.setText(lines.toString() + '.');
         }
     }
 
     // method called by UDP listener
     // exits if connection fails
-    void newAddress(InetAddress address) {
-        synchronized (sockets) {
+    void newAddress(InetAddress address) 
+    {
+        synchronized (sockets) 
+        {
             // check if already connected to address, and exit if true
             for (Socket addr: sockets)
-                if (addr.getInetAddress().getHostAddress()
-                        .equals(address.getHostAddress()))
-                    return;
+            {
+               if (addr.getInetAddress().getHostAddress()
+                     .equals(address.getHostAddress()))
+               {
+                  return;
+               }
+            }
+                
             // create a new socket and add it to transmission pool
             Socket s;
-            try {
+            try 
+            {
                 s = new Socket(address.getHostAddress(), Globals.TCPPORT);
-            } catch (IOException ex) {
+            } 
+            
+            catch (IOException ex) 
+            {
                 return;
             }
+            
             sockets.add(s);
         }
     }
@@ -119,22 +147,40 @@ public class DistributedChat extends Frame implements Runnable {
     // defines a thread for each connection,
     // which calls putChar for every received character
     // exits thread if error occurs (socket closed)
-    private void socketStream(final Socket s) {
+    private void socketStream(final Socket s) 
+    {
         final InputStream is;
-        try {
+        
+        try 
+        {
             is = s.getInputStream();
-        } catch (IOException ex) {
+        } 
+        
+        catch (IOException ex) 
+        {
             return;
         }
+        
         final InputStreamReader isr = new InputStreamReader(is);
         final BufferedReader br = new BufferedReader(isr);
-        new Thread(new Runnable() {
-            public void run() {
-                while (run && s.isConnected()) {
-                    try {
+        
+        new Thread(new Runnable() 
+        {
+            public void run() 
+            {
+                while (run && s.isConnected()) 
+                {
+                    try 
+                    {
                         if (br.ready())
-                            putChar(br.read());
-                    } catch (IOException ex) {
+                        {
+                           putChar(br.read());
+                        }
+                            
+                    } 
+                    
+                    catch (IOException ex) 
+                    {
                         return;
                     }
                 }
