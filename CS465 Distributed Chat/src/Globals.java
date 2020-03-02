@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Globals {
-    public static final int UDPPORT = 9094;
-    public static final int TCPPORT = 9095;
+    public static final int UDPPORT = 9000;
+    public static final int TCPPORT = 9000;
     // delay in milliseconds between broadcasts
     public static final int UDPINTERVAL = 1000;
     public static final InetAddress broadcastAddress;

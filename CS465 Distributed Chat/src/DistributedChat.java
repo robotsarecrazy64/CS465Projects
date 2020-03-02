@@ -68,10 +68,12 @@ public class DistributedChat extends Frame implements Runnable {
         
         if(ke.getKeyChar() != KeyEvent.VK_ENTER)
         {
-           if(ke.getKeyChar() == KeyEvent.VK_BACK_SPACE)
+           if(ke.getKeyChar() == KeyEvent.VK_BACK_SPACE && outMessage.length() > 0)
            {
               outMessage.deleteCharAt(outMessage.length() - 1);
            }
+           
+           else if(ke.getKeyChar() == KeyEvent.VK_BACK_SPACE && outMessage.length() == 0) {}
            
            else
            {
@@ -79,35 +81,34 @@ public class DistributedChat extends Frame implements Runnable {
            }
            
            System.out.println(outMessage);
-           textArea.setText(name + ": " + outMessage + "|");
+           textArea.append(name + ": " + outMessage + "|");
         }
         
         else
         {
            synchronized (sockets) 
            {
-               // iterate through all sockets, and flush character through
-               for (i = 0; i < sockets.size(); i++) 
+              
+               List<Socket> toRemove = new LinkedList<>();
+               
+               for (Socket s : sockets) 
                {
-                   try 
-                   {
-                       Socket s = sockets.get(i);
-                       PrintWriter pw = new PrintWriter(s.getOutputStream());
-                       pw.println(name + ": " + outMessage.toString() + '\n');
-                       pw.flush();
-                   } 
-
-                   catch (IOException ex) 
-                   {
-                       // remove socket, continue to any next if exception occurs
-                       // (socket closed)
-                       ex.printStackTrace();
-                       sockets.remove(i);
-                       continue;
-                   }
-                   
-
+                  try 
+                  {
+                     PrintWriter pw = new PrintWriter(s.getOutputStream());
+                     pw.println(name + ": " + outMessage.toString() + "\n");
+                     System.out.println("11111");
+                     pw.flush();
+                  } 
+               
+                  catch (IOException ex) 
+                  {
+                     ex.printStackTrace();
+                     toRemove.add(s);
+                  }
                }
+
+               sockets.removeAll(toRemove);
                outMessage.delete(0, outMessage.length());
            }
         }
