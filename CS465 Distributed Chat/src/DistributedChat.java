@@ -81,10 +81,7 @@ public class DistributedChat extends Frame implements Runnable {
            }
            
            System.out.println(outMessage);
-           synchronized (textArea)
-           {
-              textArea.setText(name + ": " + outMessage + "|");
-           }
+           textArea.setText(name + ": " + outMessage + "|");
         }
         
         else
@@ -99,7 +96,7 @@ public class DistributedChat extends Frame implements Runnable {
                   try 
                   {
                      PrintWriter pw = new PrintWriter(s.getOutputStream());
-                     pw.println(name + ": " + outMessage.toString() + "\n");
+                     pw.write(name + ": " + outMessage.toString() + "\n");
                      System.out.println("11111");
                      pw.flush();
                   } 
