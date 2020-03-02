@@ -2,15 +2,9 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.TextArea;
 import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
+import java.net.*;
 
 public class DistributedChat extends Frame implements Runnable {
     // text output of all connections
@@ -23,6 +17,8 @@ public class DistributedChat extends Frame implements Runnable {
     private StringBuilder lines;
     // continue running application?
     private boolean run = true;
+    // name
+    String name;
 
     public DistributedChat() {
         // create field objects
@@ -39,7 +35,9 @@ public class DistributedChat extends Frame implements Runnable {
 
         // start socket server to accept incoming connections
         new Thread(this).start();
-
+        Scanner scan = new Scanner(System.in);
+        System.out.print("Enter your name: "); 
+        name = scan.nextLine();
         // instantiate and assign window listener and key listener to frame
         FrameListener frameListener = new FrameListener(this);
         addWindowListener(frameListener);
@@ -62,12 +60,15 @@ public class DistributedChat extends Frame implements Runnable {
     // method called by key listener
     public void keyTyped(KeyEvent ke) {
         int i;
+        String msg;
+        
         synchronized (sockets) {
             // iterate through all sockets, and flush character through
             for (i = 0; i < sockets.size(); i++) {
                 try {
                     Socket s = sockets.get(i);
                     PrintWriter pw = new PrintWriter(s.getOutputStream());
+                    pw.print(name + ": ");
                     pw.print(String.valueOf(ke.getKeyChar()));
                     pw.flush();
                 } catch (IOException ex) {
