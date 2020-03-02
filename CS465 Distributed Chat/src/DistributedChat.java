@@ -61,7 +61,6 @@ public class DistributedChat extends Frame implements Runnable {
     public void keyTyped(KeyEvent ke) {
         int i;
         String msg;
-        
         synchronized (sockets) {
             // iterate through all sockets, and flush character through
             for (i = 0; i < sockets.size(); i++) {
@@ -69,7 +68,7 @@ public class DistributedChat extends Frame implements Runnable {
                     Socket s = sockets.get(i);
                     PrintWriter pw = new PrintWriter(s.getOutputStream());
                     pw.print(name + ": ");
-                    pw.print(String.valueOf(ke.getKeyChar()));
+                    pw.println(String.valueOf(ke.getKeyChar()));
                     pw.flush();
                 } catch (IOException ex) {
                     // remove socket, continue to any next if exception occurs
