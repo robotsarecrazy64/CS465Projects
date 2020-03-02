@@ -15,6 +15,7 @@ public class DistributedChat extends Frame implements Runnable {
     private final ArrayList<Socket> sockets;
     // storage for text data
     private StringBuilder lines;
+    private StringBuilder outMessage;
     // continue running application?
     private boolean run = true;
     // name
@@ -25,6 +26,7 @@ public class DistributedChat extends Frame implements Runnable {
         // create field objects
         sockets = new ArrayList<>();
         lines = new StringBuilder();
+        outMessage = new StringBuilder();
         textArea = new TextArea(20, 80);
         // set focusable to false to ensure keys are captured by frame
         textArea.setFocusable(false);
@@ -64,34 +66,56 @@ public class DistributedChat extends Frame implements Runnable {
         int i;
         String msg;
         
-        synchronized (sockets) 
+        if(ke.getKeyChar() != KeyEvent.VK_ENTER)
         {
-            // iterate through all sockets, and flush character through
-            for (i = 0; i < sockets.size(); i++) 
-            {
-                try 
-                {
-                    Socket s = sockets.get(i);
-                    PrintWriter pw = new PrintWriter(s.getOutputStream());
-                    pw.print(name + ": ");
-                    pw.println(String.valueOf(ke.getKeyChar()));
-                    pw.flush();
-                } 
-
-                catch (IOException ex) 
-                {
-                    // remove socket, continue to any next if exception occurs
-                    // (socket closed)
-                    ex.printStackTrace();
-                    sockets.remove(i);
-                    continue;
-                }
-            }
+           if(ke.getKeyChar() == KeyEvent.VK_BACK_SPACE)
+           {
+              outMessage.deleteCharAt(outMessage.length() - 1);
+           }
+           
+           else
+           {
+              outMessage.append(ke.getKeyChar());
+           }
+           
+           System.out.println(outMessage);
+           textArea.setText(name + ": " + outMessage + "|");
         }
+        
+        else
+        {
+           synchronized (sockets) 
+           {
+               // iterate through all sockets, and flush character through
+               for (i = 0; i < sockets.size(); i++) 
+               {
+                   try 
+                   {
+                       Socket s = sockets.get(i);
+                       PrintWriter pw = new PrintWriter(s.getOutputStream());
+                       pw.println(name + ": " + outMessage.toString() + '\n');
+                       pw.flush();
+                   } 
+
+                   catch (IOException ex) 
+                   {
+                       // remove socket, continue to any next if exception occurs
+                       // (socket closed)
+                       ex.printStackTrace();
+                       sockets.remove(i);
+                       continue;
+                   }
+                   
+
+               }
+               outMessage.delete(0, outMessage.length());
+           }
+        }
+        
     }
 
     // method called by per-connection thread defined in socketStream
-    public void putChar(int ch) {
+    /*public void putChar(int ch) {
         // check for backspace and space for delete,
         // otherwise put character into buffer,
         // and show updated buffer
@@ -107,9 +131,9 @@ public class DistributedChat extends Frame implements Runnable {
         
         synchronized (textArea) 
         {
-            textArea.setText(lines.toString() + '.');
+           textArea.setText(outMessage.toString() + '|');
         }
-    }
+    }*/
 
     // method called by UDP listener
     // exits if connection fails
@@ -174,7 +198,7 @@ public class DistributedChat extends Frame implements Runnable {
                     {
                         if (br.ready())
                         {
-                           putChar(br.read());
+                           //putChar(br.read());
                         }
                             
                     } 

@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Globals {
-    public static final int UDPPORT = 9090;
-    public static final int TCPPORT = 9091;
+    public static final int UDPPORT = 9094;
+    public static final int TCPPORT = 9095;
     // delay in milliseconds between broadcasts
     public static final int UDPINTERVAL = 1000;
     public static final InetAddress broadcastAddress;
@@ -23,8 +23,7 @@ public class Globals {
         ArrayList<NetworkInterface> interfaces = new ArrayList<>();
         try 
         {
-            interfaces.addAll(Collections.list(
-                    NetworkInterface.getNetworkInterfaces()));
+            interfaces.addAll(Collections.list(NetworkInterface.getNetworkInterfaces()));
         } 
         
         catch (SocketException ex) 
@@ -38,7 +37,9 @@ public class Globals {
             try 
             {
                 if (!nic.isUp() || nic.isLoopback())
-                    continue;
+                {
+                   continue;
+                }
             } 
             
             catch (SocketException ex) 
@@ -49,7 +50,10 @@ public class Globals {
             for (InterfaceAddress ia: nic.getInterfaceAddresses()) 
             {
                 if (ia == null || ia.getBroadcast() == null)
-                    continue;
+                {
+                   continue;
+                }
+                
                 return ia.getBroadcast();
             }
         }
