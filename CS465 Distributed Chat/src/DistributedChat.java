@@ -81,7 +81,7 @@ public class DistributedChat extends Frame implements Runnable {
            }
            
            System.out.println(outMessage);
-           textArea.append(name + ": " + outMessage + "|");
+           textArea.setText(name + ": " + outMessage + "|");
         }
         
         else
