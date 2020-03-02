@@ -66,29 +66,30 @@ public class DistributedChat extends Frame implements Runnable {
         int i;
         String msg;
         
-        if(ke.getKeyChar() != KeyEvent.VK_ENTER)
+        synchronized (sockets) 
         {
-           if(ke.getKeyChar() == KeyEvent.VK_BACK_SPACE && outMessage.length() > 0)
-           {
-              outMessage.deleteCharAt(outMessage.length() - 1);
-           }
-           
-           else if(ke.getKeyChar() == KeyEvent.VK_BACK_SPACE && outMessage.length() == 0) {}
-           
-           else
-           {
-              outMessage.append(ke.getKeyChar());
-           }
-           
-           System.out.println(outMessage);
-           textArea.setText(name + ": " + outMessage + "|");
-        }
-        
-        else
-        {
-           synchronized (sockets) 
-           {
-              
+	        if(ke.getKeyChar() != KeyEvent.VK_ENTER)
+	        {
+	           if(ke.getKeyChar() == KeyEvent.VK_BACK_SPACE && outMessage.length() > 0)
+	           {
+	              outMessage.deleteCharAt(outMessage.length() - 1);
+	           }
+	           
+	           else if(ke.getKeyChar() == KeyEvent.VK_BACK_SPACE && outMessage.length() == 0) {}
+	           
+	           else
+	           {
+	              outMessage.append(ke.getKeyChar());
+	           }
+	           
+	           System.out.println(outMessage);
+	           textArea.setText(name + ": " + outMessage + "|");
+	        }
+	        
+	        else
+	        {
+	
+	              
                List<Socket> toRemove = new LinkedList<>();
                
                for (Socket s : sockets) 
@@ -97,7 +98,7 @@ public class DistributedChat extends Frame implements Runnable {
                   {
                      PrintWriter pw = new PrintWriter(s.getOutputStream());
                      pw.write(name + ": " + outMessage.toString() + "\n");
-                     System.out.println("11111");
+                     //System.out.println("11111");
                      pw.flush();
                   } 
                
@@ -109,7 +110,7 @@ public class DistributedChat extends Frame implements Runnable {
                }
 
                sockets.removeAll(toRemove);
-               outMessage.delete(0, outMessage.length());
+               //outMessage.delete(0, outMessage.length());
            }
         }
         
