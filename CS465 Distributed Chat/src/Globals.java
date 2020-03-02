@@ -17,23 +17,37 @@ public class Globals {
         broadcastAddress = getBroadcastAddress();
         assert (broadcastAddress != null);
     }
-    private static InetAddress getBroadcastAddress() {
+    
+    private static InetAddress getBroadcastAddress() 
+    {
         ArrayList<NetworkInterface> interfaces = new ArrayList<>();
-        try {
+        try 
+        {
             interfaces.addAll(Collections.list(
                     NetworkInterface.getNetworkInterfaces()));
-        } catch (SocketException ex) {
+        } 
+        
+        catch (SocketException ex) 
+        {
             ex.printStackTrace();
             return null;
         }
-        for (NetworkInterface nic: interfaces) {
-            try {
+        
+        for (NetworkInterface nic: interfaces) 
+        {
+            try 
+            {
                 if (!nic.isUp() || nic.isLoopback())
                     continue;
-            } catch (SocketException ex) {
+            } 
+            
+            catch (SocketException ex) 
+            {
                 continue;
             }
-            for (InterfaceAddress ia: nic.getInterfaceAddresses()) {
+            
+            for (InterfaceAddress ia: nic.getInterfaceAddresses()) 
+            {
                 if (ia == null || ia.getBroadcast() == null)
                     continue;
                 return ia.getBroadcast();
