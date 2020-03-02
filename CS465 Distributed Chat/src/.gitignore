@@ -5,3 +5,12 @@
 /DistributedChat.class
 /DCClientHandler.class
 /UDPMulticastServer.class
+/LANChat.class
+/FrameListener.class
+/Broadcast.class
+/Broadcasts$1.class
+/Broadcasts$2.class
+/Broadcasts.class
+/Globak.class
+/Globals.class
+/DistributedChat$1.class
