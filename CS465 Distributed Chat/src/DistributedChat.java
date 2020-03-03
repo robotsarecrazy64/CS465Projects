@@ -54,6 +54,32 @@ public class DistributedChat extends Frame implements Runnable {
 
     // global quit method shuts down everything and exits
     public void quit() {
+    	
+    	synchronized (sockets) 
+        {
+           
+            List<Socket> toRemove = new LinkedList<>();
+            
+            for (Socket s : sockets) 
+            {
+               try 
+               {
+                  PrintWriter pw = new PrintWriter(s.getOutputStream());
+                  pw.println(name + "Has left the chat");
+                  pw.flush();
+               } 
+            
+               catch (IOException ex) 
+               {
+                  ex.printStackTrace();
+                  toRemove.add(s);
+               }
+            }
+
+            sockets.removeAll(toRemove);
+            outMessage.delete(0, outMessage.length());
+        }
+    	
         run = false;
         broadcasts.quit();
         System.exit(0);
@@ -97,7 +123,7 @@ public class DistributedChat extends Frame implements Runnable {
                       try 
                       {
                          PrintWriter pw = new PrintWriter(s.getOutputStream());
-                         pw.println(name + ": " + outMessage.toString() + "\n");
+                         pw.println(name + ": " + outMessage.toString());
                          pw.flush();
                       } 
                    
@@ -181,20 +207,12 @@ public class DistributedChat extends Frame implements Runnable {
     public void run() {
         try 
         {
-
-	            ServerSocket ss = new ServerSocket(Globals.TCPPORT);
-	            while (ss.isBound() && run)
-	            {
-	                socketStream(ss.accept());
-	            }
-	            
-	            for (Socket s : sockets) 
-	            {
-	            	PrintWriter pw = new PrintWriter(s.getOutputStream());
-	            	pw.println(name + ": " + outMessage.toString() + "\n");
-	                pw.flush();
-	            }
-
+        	
+            ServerSocket ss = new ServerSocket(Globals.TCPPORT);
+            while (ss.isBound() && run)
+            {
+                socketStream(ss.accept());
+            }
             
             quit();
         } 
