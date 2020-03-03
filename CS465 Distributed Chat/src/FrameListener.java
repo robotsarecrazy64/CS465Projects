@@ -3,12 +3,25 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+/**
+    This class is responsible for managing the frame for the GUI and Overriding interface methods
+*/
 public class FrameListener implements WindowListener, KeyListener {
+     /**
+        Initialize Class variable
+    */
     private final DistributedChat parent;
 
+    /**
+        Constructs a Frame object
+    */
     public FrameListener(DistributedChat parentArg) {
         parent = parentArg;
     }
+
+    /**
+        Override Interface methods
+    */
 
     @Override
     public void windowOpened(WindowEvent windowEvent) {
@@ -45,9 +58,12 @@ public class FrameListener implements WindowListener, KeyListener {
 
     }
 
+    /**
+        Method used for messaging clients
+    */
     @Override
     public void keyTyped(KeyEvent keyInput) {
-    	parent.keyTyped(keyInput);
+        parent.keyTyped(keyInput);
     }
 
     @Override
