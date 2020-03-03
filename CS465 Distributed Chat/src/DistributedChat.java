@@ -11,7 +11,7 @@ public class DistributedChat extends Frame implements Runnable
 {
 	// Creates global variables
     private final TextArea textArea;
-    private final Broadcasts broadcasts;
+    private final Message broadcasts;
     private static ArrayList<Socket> sockets;
     private StringBuilder lines;
     private StringBuilder outMessage;
@@ -46,7 +46,7 @@ public class DistributedChat extends Frame implements Runnable
         addKeyListener(frameListener);
 
         // Initialize message output
-        broadcasts = new Broadcasts(this);
+        broadcasts = new Message(this);
 
         // Set GUI visible
         setVisible(true);

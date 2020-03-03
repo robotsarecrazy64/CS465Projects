@@ -3,13 +3,13 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
-public class Broadcasts {
+public class Message {
 
     private final Runnable receiver;
     private final Runnable sender;
     private boolean run = true;
 
-    public Broadcasts(DistributedChat parent) 
+    public Message(DistributedChat parent) 
     {
     	// Receiver thread for the client
         receiver = new Runnable() 

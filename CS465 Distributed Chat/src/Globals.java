@@ -7,8 +7,8 @@ import java.util.Collections;
 
 public class Globals {
 	// Ports to connect to and address to send message to
-    public static final int UDPPORT = 9000;
-    public static final int TCPPORT = 9001;
+    public static final int UDPPORT = 9111;
+    public static final int TCPPORT = 9112;
     public static final int UDPINTERVAL = 1000;
     public static final InetAddress broadcastAddress;
     static
