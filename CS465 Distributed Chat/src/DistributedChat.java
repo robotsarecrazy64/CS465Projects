@@ -173,24 +173,28 @@ public class DistributedChat extends Frame implements Runnable {
             }
             
             sockets.add(s);
-               
-                List<Socket> toRemove = new LinkedList<>();
+            for (Socket addr: sockets) 
+            {
+            	System.out.println(addr);
+            }
+            System.out.println();
+            List<Socket> toRemove = new LinkedList<>();
 
-                   try 
-                   {
-                      PrintWriter pw = new PrintWriter(s.getOutputStream());
-                      pw.println(">> " + name + " has joined the chat");
-                      pw.flush();
-                   } 
-                
-                   catch (IOException ex) 
-                   {
-                      ex.printStackTrace();
-                      toRemove.add(s);
-                   }
+            try 
+            {
+               PrintWriter pw = new PrintWriter(s.getOutputStream());
+               pw.println(">> " + name + " has joined the chat");
+               pw.flush();
+            } 
+        
+            catch (IOException ex) 
+            {
+               ex.printStackTrace();
+               toRemove.add(s);
+            }
 
-                sockets.removeAll(toRemove);
-                outMessage.delete(0, outMessage.length());
+            sockets.removeAll(toRemove);
+            outMessage.delete(0, outMessage.length());
         }
     }
 
