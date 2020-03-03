@@ -47,7 +47,7 @@ public class FrameListener implements WindowListener, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent ke) {
-        parent.keyTyped(ke);
+    	parent.keyTyped(ke);
     }
 
     @Override
