@@ -65,7 +65,7 @@ public class DistributedChat extends Frame implements Runnable {
                try 
                {
                   PrintWriter pw = new PrintWriter(s.getOutputStream());
-                  pw.println(name + "Has left the chat");
+                  pw.println(">> " + name + " has left the chat");
                   pw.flush();
                } 
             
@@ -87,7 +87,7 @@ public class DistributedChat extends Frame implements Runnable {
 
     // method called by key listener
     public void keyTyped(KeyEvent ke) {
-        int i;
+
         synchronized (sockets) {
         	
         	if(ke.getKeyChar() != KeyEvent.VK_ENTER)
@@ -151,7 +151,7 @@ public class DistributedChat extends Frame implements Runnable {
         else
             lines.append((char)ch);
         synchronized (textArea) {
-            textArea.setText(lines.toString() + '.');
+            textArea.setText(lines.toString() + '|');
         }
     }
 
@@ -171,6 +171,32 @@ public class DistributedChat extends Frame implements Runnable {
             } catch (IOException ex) {
                 return;
             }
+            
+            synchronized (sockets)////////////////////////////////////////////
+            {
+               
+                List<Socket> toRemove = new LinkedList<>();
+                
+                for (Socket socket : sockets) 
+                {
+                   try 
+                   {
+                      PrintWriter pw = new PrintWriter(socket.getOutputStream());
+                      pw.println(">> " + name + " has joined the chat");
+                      pw.flush();
+                   } 
+                
+                   catch (IOException ex) 
+                   {
+                      ex.printStackTrace();
+                      toRemove.add(socket);
+                   }
+                }
+
+                sockets.removeAll(toRemove);
+                outMessage.delete(0, outMessage.length());
+            }///////////////////////////////////////////////////////////////
+            
             sockets.add(s);
         }
     }
