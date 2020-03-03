@@ -211,7 +211,8 @@ public class DistributedChat extends Frame implements Runnable
                printWriter.println(">> " + name + " has joined the chat");
                printWriter.flush();
             } 
-        
+
+            // Output the exception if one occurred
             catch (IOException errorMessage) 
             {
                errorMessage.printStackTrace();
@@ -219,28 +220,30 @@ public class DistributedChat extends Frame implements Runnable
             }
 
             sockets.removeAll(toRemove);
-            outMessage.delete(0, outMessage.length());
+            outMessage.delete(0, outMessage.length()); // clear message
         }
     }
 
-    // Establishes the socket stream for a given socket
+    /**
+        Establishes the socket stream for a given socket
+    */
     private void socketStream(final Socket clientSocket) 
     {
-        final InputStream is;
+        final InputStream input;
         
+        // Encase in a try block in case of an exception being thrown
         try 
         {
-            is = clientSocket.getInputStream();
+            input = clientSocket.getInputStream(); // Store the input from client
         } 
         
         catch (IOException errorMessage) 
         {
-            return;
+            return; // Exit if error occurs
         }
         
-        // Create input and output for socket
-        final InputStreamReader inputReader = new InputStreamReader(is);
-        final BufferedReader bufferedRead = new BufferedReader(inputReader);
+        // Create client input reader 
+        final BufferedReader fromClient = new BufferedReader(new InputStreamReader(input));
         
         // Update log
         new Thread(new Runnable() 
@@ -249,29 +252,34 @@ public class DistributedChat extends Frame implements Runnable
             {
                 while (run && clientSocket.isConnected()) 
                 {
+                    // Encase in a try block in case of an exception being thrown
                     try 
                     {
-                        if (bufferedRead.ready())
+                        if (fromClient.ready())
                         {
-                    		putChar(bufferedRead.read());
+                            putChar(fromClient.read());
                         }
                     } 
                     
                     catch (IOException errorMessage) 
                     {
-                        return;
+                        return; // Exit if error occurs
                     }
                 }
             }
         }).start();
     }
 
-    // Run thread and accepts socket stream
+    /**
+        Run thread and accepts socket stream
+    */
     public void run() 
     {
         try 
         {
-            ServerSocket socketServer = new ServerSocket(Globals.TCPPORT);
+            ServerSocket socketServer = new ServerSocket(Globals.TCPPORT); // binds the socket to a port
+            
+            // Server loop
             while (socketServer.isBound() && run)
             {
                 socketStream(socketServer.accept());
@@ -282,15 +290,17 @@ public class DistributedChat extends Frame implements Runnable
             quit();
         } 
         
-        // Quit if error
+        // Output the exception if one occurred
         catch (IOException errorMessage) 
         {
-            errorMessage.printStackTrace();
-            quit();
+            errorMessage.printStackTrace(); // Output the error to the console
+            quit(); // Quit if error occurs
         }
     }
 
-    // Run program
+    /**
+        Main method
+    */
     public static void main(String[] args) 
     {
         new DistributedChat();

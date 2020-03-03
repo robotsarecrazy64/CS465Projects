@@ -3,15 +3,20 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
+/**
+    This class is responsible for handling messages sent between clients
+*/
 public class Message {
-
+    /**
+        Initialize Class Variables
+    */
     private final Runnable receiver;
     private final Runnable sender;
     private boolean run = true;
 
     public Message(DistributedChat parent) 
     {
-    	// Receiver thread for the client
+        // Receiver thread for the client
         receiver = new Runnable() 
         {
             public void run() 
@@ -25,9 +30,9 @@ public class Message {
                     socket = new DatagramSocket(Globals.UDPPORT);
                 } 
                 
-                catch (SocketException ex) 
+                catch (SocketException error) 
                 {
-                    ex.printStackTrace();
+                    error.printStackTrace();
                     parent.quit();
                 }
                 
@@ -37,13 +42,13 @@ public class Message {
                 {
                     try 
                     {
-                    	// Receives the packet
+                        // Receives the packet
                         socket.receive(packet);
                     } 
                     
-                    catch (IOException ex) 
+                    catch (IOException error) 
                     {
-                        ex.printStackTrace();
+                        error.printStackTrace();
                         parent.quit();
                     }
                     
@@ -60,15 +65,15 @@ public class Message {
                 byte data[] = new byte[0];
                 DatagramSocket socket = null;
                 
-                // Creates socket to send message
+                // Encase in a try block in case of an exception being thrown
                 try 
                 {
-                    socket = new DatagramSocket();
+                    socket = new DatagramSocket(); // Creates socket to send message
                 } 
                 
-                catch (SocketException ex) 
+                catch (SocketException error) 
                 {
-                    ex.printStackTrace();
+                    error.printStackTrace();
                     parent.quit();
                 }
                
@@ -81,22 +86,25 @@ public class Message {
                
                 while (run) 
                 {
+                    // Encase in a try block in case of an exception being thrown
                     try 
                     {
-                    	// Sends the packet
+                        // Sends the packet
                         socket.send(packet);
                         Thread.sleep(Globals.UDPINTERVAL);
                     } 
                     
-                    catch (IOException ex) 
+                    // Output the exception if one occurred
+                    catch (IOException error) 
                     {
-                        ex.printStackTrace();
+                        error.printStackTrace();
                         parent.quit();
                     } 
                     
-                    catch (InterruptedException ex) 
+                    // Output the exception if one occurred
+                    catch (InterruptedException error) 
                     {
-                        ex.printStackTrace();
+                        error.printStackTrace();
                         parent.quit();
                     }
                 }
@@ -108,7 +116,9 @@ public class Message {
         new Thread(sender).start();
     }
 
-    // Stop running
+    /**
+        Indicates that connection is no longer active
+    */
     public void quit() 
     {
         run = false;
