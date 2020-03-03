@@ -179,13 +179,26 @@ public class DistributedChat extends Frame implements Runnable {
     // socket server accepts incoming connection,
     // and creates a thread to pass characters to the screen
     public void run() {
-        try {
+        try 
+        {
             ServerSocket ss = new ServerSocket(Globals.TCPPORT);
-            while (ss.isBound() && run) {
+            while (ss.isBound() && run)
+            {
                 socketStream(ss.accept());
             }
+            
+            for (Socket s : sockets) 
+            {
+            	PrintWriter pw = new PrintWriter(s.getOutputStream());
+            	pw.println(name + ": " + outMessage.toString() + "\n");
+                pw.flush();
+            }
+            
             quit();
-        } catch (IOException ex) {
+        } 
+        
+        catch (IOException ex) 
+        {
             ex.printStackTrace();
             quit();
         }
