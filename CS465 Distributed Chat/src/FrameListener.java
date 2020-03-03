@@ -11,52 +11,52 @@ public class FrameListener implements WindowListener, KeyListener {
     }
 
     @Override
-    public void windowOpened(WindowEvent we) {
+    public void windowOpened(WindowEvent windowEvent) {
 
     }
 
     @Override
-    public void windowClosing(WindowEvent we) {
+    public void windowClosing(WindowEvent windowEvent) {
         parent.quit();
     }
 
     @Override
-    public void windowClosed(WindowEvent we) {
+    public void windowClosed(WindowEvent windowEvent) {
 
     }
 
     @Override
-    public void windowIconified(WindowEvent we) {
+    public void windowIconified(WindowEvent windowEvent) {
 
     }
 
     @Override
-    public void windowDeiconified(WindowEvent we) {
+    public void windowDeiconified(WindowEvent windowEvent) {
 
     }
 
     @Override
-    public void windowActivated(WindowEvent we) {
+    public void windowActivated(WindowEvent windowEvent) {
 
     }
 
     @Override
-    public void windowDeactivated(WindowEvent we) {
+    public void windowDeactivated(WindowEvent windowEvent) {
 
     }
 
     @Override
-    public void keyTyped(KeyEvent ke) {
-    	parent.keyTyped(ke);
+    public void keyTyped(KeyEvent keyInput) {
+    	parent.keyTyped(keyInput);
     }
 
     @Override
-    public void keyPressed(KeyEvent ke) {
+    public void keyPressed(KeyEvent keyInput) {
 
     }
 
     @Override
-    public void keyReleased(KeyEvent ke) {
+    public void keyReleased(KeyEvent keyInput) {
 
     }
 

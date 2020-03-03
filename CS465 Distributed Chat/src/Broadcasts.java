@@ -11,12 +11,15 @@ public class Broadcasts {
 
     public Broadcasts(DistributedChat parent) 
     {
+    	// Receiver thread for the client
         receiver = new Runnable() 
         {
             public void run() 
             {
                 byte data[] = new byte[0];
                 DatagramSocket socket = null;
+                
+                // Creates socket to receive message
                 try 
                 {
                     socket = new DatagramSocket(Globals.UDPPORT);
@@ -28,11 +31,13 @@ public class Broadcasts {
                     parent.quit();
                 }
                 
+                // Creates packet to hold the data in
                 DatagramPacket packet = new DatagramPacket(data, data.length);
                 while (run) 
                 {
                     try 
                     {
+                    	// Receives the packet
                         socket.receive(packet);
                     } 
                     
@@ -47,12 +52,15 @@ public class Broadcasts {
             }
         };
         
+        // Sender thread for the client
         sender = new Runnable() 
         {
             public void run() 
             {
                 byte data[] = new byte[0];
                 DatagramSocket socket = null;
+                
+                // Creates socket to send message
                 try 
                 {
                     socket = new DatagramSocket();
@@ -64,6 +72,7 @@ public class Broadcasts {
                     parent.quit();
                 }
                
+                // Creates packet to send the data in
                 DatagramPacket packet = new DatagramPacket(
                         data, 
                         data.length, 
@@ -74,6 +83,7 @@ public class Broadcasts {
                 {
                     try 
                     {
+                    	// Sends the packet
                         socket.send(packet);
                         Thread.sleep(Globals.UDPINTERVAL);
                     } 
@@ -93,10 +103,12 @@ public class Broadcasts {
             }
         };
         
+        //Start sending and receiving messages
         new Thread(receiver).start();
         new Thread(sender).start();
     }
 
+    // Stop running
     public void quit() 
     {
         run = false;

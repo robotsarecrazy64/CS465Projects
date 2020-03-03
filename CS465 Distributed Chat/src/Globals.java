@@ -6,57 +6,61 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Globals {
-    public static final int UDPPORT = 9002;
-    public static final int TCPPORT = 9003;
-    // delay in milliseconds between broadcasts
+	// Ports to connect to and address to send message to
+    public static final int UDPPORT = 9000;
+    public static final int TCPPORT = 9001;
     public static final int UDPINTERVAL = 1000;
     public static final InetAddress broadcastAddress;
-    static {
-        // create broadcast address object referencing the local machine's
-        // broadcasting address for use with UDP
+    static
+    {
         broadcastAddress = getBroadcastAddress();
         assert (broadcastAddress != null);
     }
     
+    // Get IP address that messages from clients will be sent
     private static InetAddress getBroadcastAddress() 
     {
         ArrayList<NetworkInterface> interfaces = new ArrayList<>();
+        
+        // Add to the list of IP address
         try 
         {
             interfaces.addAll(Collections.list(NetworkInterface.getNetworkInterfaces()));
         } 
         
-        catch (SocketException ex) 
+        catch (SocketException errorMessage) 
         {
-            ex.printStackTrace();
+            errorMessage.printStackTrace();
             return null;
         }
         
-        for (NetworkInterface nic: interfaces) 
+        // Gets the address of the current client
+        for (NetworkInterface networkInterfaceCard: interfaces) 
         {
             try 
             {
-                if (!nic.isUp() || nic.isLoopback())
+                if (!networkInterfaceCard.isUp() || networkInterfaceCard.isLoopback())
                 {
                    continue;
                 }
             } 
             
-            catch (SocketException ex) 
+            catch (SocketException errorMessage) 
             {
                 continue;
             }
             
-            for (InterfaceAddress ia: nic.getInterfaceAddresses()) 
+            for (InterfaceAddress interfaceAddr: networkInterfaceCard.getInterfaceAddresses()) 
             {
-                if (ia == null || ia.getBroadcast() == null)
+                if (interfaceAddr == null || interfaceAddr.getBroadcast() == null)
                 {
                    continue;
                 }
                 
-                return ia.getBroadcast();
+                return interfaceAddr.getBroadcast();
             }
         }
+        
         return null;
     }
 }

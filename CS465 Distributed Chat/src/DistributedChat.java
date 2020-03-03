@@ -6,73 +6,74 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 
-public class DistributedChat extends Frame implements Runnable {
-    // text output of all connections
+// Main class that runs the chat
+public class DistributedChat extends Frame implements Runnable 
+{
+	// Creates global variables
     private final TextArea textArea;
-    // broadcast and receive of UDP; used for TCP connection(s) to peer(s)
     private final Broadcasts broadcasts;
-    // list of all sockets for TCP output
     private static ArrayList<Socket> sockets;
-    // storage for text data
     private StringBuilder lines;
     private StringBuilder outMessage;
-    // continue running application?
     private boolean run = true;
-    String name;
+    private String name;
 
     public DistributedChat() {
-        // create field objects
+        // Initialize field variables
         sockets = new ArrayList<>();
         lines = new StringBuilder();
         outMessage = new StringBuilder();
+        
+        // Initialize GUI variables
         textArea = new TextArea(20, 80);
-        // set focusable to false to ensure keys are captured by frame
         textArea.setFocusable(false);
-        // monospace ftw
         textArea.setFont(Font.decode("monospaced"));
-        // the only gui object is the text area
         add(textArea);
         pack();
 
-        // start socket server to accept incoming connections
+        // Start the server socket
         new Thread(this).start();
 
+        // Take in client name
         Scanner scan = new Scanner(System.in);
         System.out.print("Enter your name: "); 
         name = scan.nextLine();
-        // instantiate and assign window listener and key listener to frame
+        scan.close();
+        
+        // Instantiate and assign window listener and key listener to GUI
         FrameListener frameListener = new FrameListener(this);
         addWindowListener(frameListener);
         addKeyListener(frameListener);
 
-        // late initialize of UDP broadcast and receive, to ensure needed
-        // objects are instantiated
+        // Initialize message output
         broadcasts = new Broadcasts(this);
 
+        // Set GUI visible
         setVisible(true);
     }
 
-    // global quit method shuts down everything and exits
+    // Quit method that closes everything
     public void quit() {
     	
+    	// Send leave message to all other clients
     	synchronized (sockets) 
         {
-           
             List<Socket> toRemove = new LinkedList<>();
             
-            for (Socket s : sockets) 
+            for (Socket clientSocket : sockets) 
             {
                try 
                {
-                  PrintWriter pw = new PrintWriter(s.getOutputStream());
-                  pw.println(">> " + name + " has left the chat");
-                  pw.flush();
+            	  // Leave message
+                  PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
+                  printWriter.println(">> " + name + " has left the chat");
+                  printWriter.flush();
                } 
             
-               catch (IOException ex) 
+               catch (IOException errorMessage) 
                {
-                  ex.printStackTrace();
-                  toRemove.add(s);
+                  errorMessage.printStackTrace();
+                  toRemove.add(clientSocket);
                }
             }
 
@@ -80,60 +81,68 @@ public class DistributedChat extends Frame implements Runnable {
             outMessage.delete(0, outMessage.length());
         }
     	
+    	// Shut down 
         run = false;
         broadcasts.quit();
         System.exit(0);
     }
 
-    // method called by key listener
-    public void keyTyped(KeyEvent ke) {
+    // Method that listens for key typing, and generates output string
+    public void keyTyped(KeyEvent keyPress) {
 
-        synchronized (sockets) {
-        	
-        	if(ke.getKeyChar() != KeyEvent.VK_ENTER)
+        synchronized (sockets) 
+        {
+        	// If not send, then append
+        	if(keyPress.getKeyChar() != KeyEvent.VK_ENTER)
             {
-               if(ke.getKeyChar() == KeyEvent.VK_BACK_SPACE && outMessage.length() > 0)
+        	   // Backspace
+               if(keyPress.getKeyChar() == KeyEvent.VK_BACK_SPACE && outMessage.length() > 0)
                {
                   outMessage.deleteCharAt(outMessage.length() - 1);
                }
                
-               else if(ke.getKeyChar() == KeyEvent.VK_BACK_SPACE && outMessage.length() == 0) {}
+               //Backspace
+               else if(keyPress.getKeyChar() == KeyEvent.VK_BACK_SPACE && outMessage.length() == 0) {}
                
+               // Append
                else
                {
-                  outMessage.append(ke.getKeyChar());
+                  outMessage.append(keyPress.getKeyChar());
                }
                
-               System.out.println(outMessage);
+               // Display current out message in GUI
                synchronized (textArea) 
                {
             	   textArea.setText(lines.toString() + name + ": " + outMessage + "|");
                }
             }
         	
+        	// If send, no append
         	else
             {
                synchronized (sockets) 
                {
-                  
                    List<Socket> toRemove = new LinkedList<>();
                    
-                   for (Socket s : sockets) 
+                   // Send message to all clients
+                   for (Socket clientSocket : sockets) 
                    {
                       try 
                       {
-                         PrintWriter pw = new PrintWriter(s.getOutputStream());
-                         pw.println(name + ": " + outMessage.toString());
-                         pw.flush();
+                    	 // Message send
+                         PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
+                         printWriter.println(name + ": " + outMessage.toString());
+                         printWriter.flush();
                       } 
                    
-                      catch (IOException ex) 
+                      catch (IOException errorMessage) 
                       {
-                         ex.printStackTrace();
-                         toRemove.add(s);
+                         errorMessage.printStackTrace();
+                         toRemove.add(clientSocket);
                       }
                    }
 
+                   // Reset current message
                    sockets.removeAll(toRemove);
                    outMessage.delete(0, outMessage.length());
                }
@@ -141,56 +150,72 @@ public class DistributedChat extends Frame implements Runnable {
         }
     }
 
-    // method called by per-connection thread defined in socketStream
-    public void putChar(int ch) {
-        // check for backspace and space for delete,
-        // otherwise put character into buffer,
-        // and show updated buffer
-        if (ch == 8 && lines.length() > 0)
-            lines.delete(lines.length() - 1, lines.length());
+    // Keep track of the message log
+    public void putChar(int characterInput) 
+    {
+        // Update log
+        if ((char)characterInput == KeyEvent.VK_BACK_SPACE && lines.length() > 0) // yo test
+        {
+        	lines.delete(lines.length() - 1, lines.length());
+        }
+        
+        // Update log
         else
-            lines.append((char)ch);
-        synchronized (textArea) {
+        {
+        	lines.append((char)characterInput);
+        }
+        
+        // Update log
+        synchronized (textArea) 
+        {
             textArea.setText(lines.toString() + '|');
         }
     }
 
-    // method called by UDP listener
-    // exits if connection fails
-    void newAddress(InetAddress address) {
-        synchronized (sockets) {
-            // check if already connected to address, and exit if true
-            for (Socket addr: sockets)
-                if (addr.getInetAddress().getHostAddress()
-                        .equals(address.getHostAddress()))
-                    return;
-            // create a new socket and add it to transmission pool
-            Socket s;
-            try {
-                s = new Socket(address.getHostAddress(), Globals.TCPPORT);
-            } catch (IOException ex) {
+    // Get address to send messages
+    void newAddress(InetAddress address) 
+    {
+        synchronized (sockets) 
+        {
+            // Check is socket connected, if so, exit
+            for (Socket clientSocket: sockets)
+            {
+            	if (clientSocket.getInetAddress().getHostAddress().equals(address.getHostAddress()))
+            	{
+            		return;
+            	}
+            }
+                    
+            // Create new socket to add to array
+            Socket clientSocket;
+            
+            try 
+            {
+                clientSocket = new Socket(address.getHostAddress(), Globals.TCPPORT);
+            } 
+            
+            catch (IOException errorMessage) 
+            {
                 return;
             }
             
-            sockets.add(s);
-            for (Socket addr: sockets) 
-            {
-            	System.out.println(addr);
-            }
-            System.out.println();
+            sockets.add(clientSocket);
+            
+            // Send join message
             List<Socket> toRemove = new LinkedList<>();
 
             try 
             {
-               PrintWriter pw = new PrintWriter(s.getOutputStream());
-               pw.println(">> " + name + " has joined the chat");
-               pw.flush();
+               // Join message
+               PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
+               printWriter.println(">> " + name + " has joined the chat");
+               printWriter.flush();
             } 
         
-            catch (IOException ex) 
+            catch (IOException errorMessage) 
             {
-               ex.printStackTrace();
-               toRemove.add(s);
+               errorMessage.printStackTrace();
+               toRemove.add(clientSocket);
             }
 
             sockets.removeAll(toRemove);
@@ -198,26 +223,42 @@ public class DistributedChat extends Frame implements Runnable {
         }
     }
 
-    // called by socket server thread
-    // defines a thread for each connection,
-    // which calls putChar for every received character
-    // exits thread if error occurs (socket closed)
-    private void socketStream(final Socket s) {
+    // Establishes the socket stream for a given socket
+    private void socketStream(final Socket clientSocket) 
+    {
         final InputStream is;
-        try {
-            is = s.getInputStream();
-        } catch (IOException ex) {
+        
+        try 
+        {
+            is = clientSocket.getInputStream();
+        } 
+        
+        catch (IOException errorMessage) 
+        {
             return;
         }
-        final InputStreamReader isr = new InputStreamReader(is);
-        final BufferedReader br = new BufferedReader(isr);
-        new Thread(new Runnable() {
-            public void run() {
-                while (run && s.isConnected()) {
-                    try {
-                        if (br.ready())
-                            putChar(br.read());
-                    } catch (IOException ex) {
+        
+        // Create input and output for socket
+        final InputStreamReader inputReader = new InputStreamReader(is);
+        final BufferedReader bufferedRead = new BufferedReader(inputReader);
+        
+        // Update log
+        new Thread(new Runnable() 
+        {
+            public void run() 
+            {
+                while (run && clientSocket.isConnected()) 
+                {
+                    try 
+                    {
+                        if (bufferedRead.ready())
+                        {
+                    		putChar(bufferedRead.read());
+                        }
+                    } 
+                    
+                    catch (IOException errorMessage) 
+                    {
                         return;
                     }
                 }
@@ -225,30 +266,33 @@ public class DistributedChat extends Frame implements Runnable {
         }).start();
     }
 
-    // socket server accepts incoming connection,
-    // and creates a thread to pass characters to the screen
-    public void run() {
+    // Run thread and accepts socket stream
+    public void run() 
+    {
         try 
         {
-        	
-            ServerSocket ss = new ServerSocket(Globals.TCPPORT);
-            while (ss.isBound() && run)
+            ServerSocket socketServer = new ServerSocket(Globals.TCPPORT);
+            while (socketServer.isBound() && run)
             {
-                socketStream(ss.accept());
+                socketStream(socketServer.accept());
             }
             
+            socketServer.close();
+            // Quit when done
             quit();
         } 
         
-        catch (IOException ex) 
+        // Quit if error
+        catch (IOException errorMessage) 
         {
-            ex.printStackTrace();
+            errorMessage.printStackTrace();
             quit();
         }
     }
 
-    // application entry
-    public static void main(String[] args) {
+    // Run program
+    public static void main(String[] args) 
+    {
         new DistributedChat();
     }
 }
