@@ -172,6 +172,8 @@ public class DistributedChat extends Frame implements Runnable {
                 return;
             }
             
+            sockets.add(s);
+            
             synchronized (sockets)////////////////////////////////////////////
             {
                
@@ -196,8 +198,6 @@ public class DistributedChat extends Frame implements Runnable {
                 sockets.removeAll(toRemove);
                 outMessage.delete(0, outMessage.length());
             }///////////////////////////////////////////////////////////////
-            
-            sockets.add(s);
         }
     }
 
