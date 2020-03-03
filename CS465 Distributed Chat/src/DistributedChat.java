@@ -12,7 +12,7 @@ public class DistributedChat extends Frame implements Runnable {
     // broadcast and receive of UDP; used for TCP connection(s) to peer(s)
     private final Broadcasts broadcasts;
     // list of all sockets for TCP output
-    private final ArrayList<Socket> sockets;
+    private static ArrayList<Socket> sockets;
     // storage for text data
     private StringBuilder lines;
     private StringBuilder outMessage;
@@ -174,26 +174,23 @@ public class DistributedChat extends Frame implements Runnable {
             
             sockets.add(s);
                
-            List<Socket> toRemove = new LinkedList<>();
-            
-            for (Socket socket : sockets) 
-            {
-               try 
-               {
-                  PrintWriter pw = new PrintWriter(socket.getOutputStream());
-                  pw.println(">> " + name + " has joined the chat");
-                  pw.flush();
-               } 
-            
-               catch (IOException ex) 
-               {
-                  ex.printStackTrace();
-                  toRemove.add(socket);
-               }
-            }
+                List<Socket> toRemove = new LinkedList<>();
 
-            sockets.removeAll(toRemove);
-            outMessage.delete(0, outMessage.length());
+                   try 
+                   {
+                      PrintWriter pw = new PrintWriter(s.getOutputStream());
+                      pw.println(">> " + name + " has joined the chat");
+                      pw.flush();
+                   } 
+                
+                   catch (IOException ex) 
+                   {
+                      ex.printStackTrace();
+                      toRemove.add(s);
+                   }
+
+                sockets.removeAll(toRemove);
+                outMessage.delete(0, outMessage.length());
         }
     }
 
