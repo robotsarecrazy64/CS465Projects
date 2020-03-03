@@ -181,18 +181,20 @@ public class DistributedChat extends Frame implements Runnable {
     public void run() {
         try 
         {
-            ServerSocket ss = new ServerSocket(Globals.TCPPORT);
-            while (ss.isBound() && run)
-            {
-                socketStream(ss.accept());
-            }
-            
-            for (Socket s : sockets) 
-            {
-            	PrintWriter pw = new PrintWriter(s.getOutputStream());
-            	pw.println(name + ": " + outMessage.toString() + "\n");
-                pw.flush();
-            }
+
+	            ServerSocket ss = new ServerSocket(Globals.TCPPORT);
+	            while (ss.isBound() && run)
+	            {
+	                socketStream(ss.accept());
+	            }
+	            
+	            for (Socket s : sockets) 
+	            {
+	            	PrintWriter pw = new PrintWriter(s.getOutputStream());
+	            	pw.println(name + ": " + outMessage.toString() + "\n");
+	                pw.flush();
+	            }
+
             
             quit();
         } 
