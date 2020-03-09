@@ -11,4 +11,9 @@ public class Lock
     public synchronized void release(TransID transaction) {
         
     }
+	
+	public synchronized bool checkConflict(TransID transaction) {
+		// implement method that checks for conflict
+		return true;
+	}
 }
