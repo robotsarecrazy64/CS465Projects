@@ -16,7 +16,19 @@ public class TransactionServer extends Thread{
         Default Constructor for connection
     */
     public TransactionServer() {
+        try {
+            
+        }
+        catch (Exception error) {
+            // print the error if one occurred
+        }
+
+        try {
+            
+        }
+        catch () {
         
+        }
     }
 
     public void log() {
@@ -25,6 +37,14 @@ public class TransactionServer extends Thread{
 
     public void run() {
         // run method
+        while () {
+            try {
+                
+            }
+            catch (IOException error) {
+                // print the exception of one occured
+            }
+        }
     }
 }
 
