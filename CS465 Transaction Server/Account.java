@@ -1,12 +1,15 @@
-public class Account {
+public class Account 
+{
     
     static ServerSocket server;
     
-    public Account() {
+    public Account() 
+    {
         //  
     }
 
-    public void run() {
+    public void run() 
+    {
         
     }
 }
