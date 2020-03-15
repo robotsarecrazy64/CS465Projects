@@ -8,6 +8,9 @@ import transaction.server.lock.LockTypes;
  */
 public class AccountManager implements LockTypes
 {
+	/**
+        Class Variables
+    */
     private static ArrayList<Account> accounts; // transaction ids of current holders
     private static int numberAccounts;
     private static int initialBalance;
