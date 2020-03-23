@@ -8,16 +8,22 @@ import transaction.server.lock.LockTypes;
  */
 public class AccountManager implements LockTypes
 {
-    private static ArrayList<Account> accounts; // transaction ids of current holders
+    // initialize global variables
+    private static ArrayList<Account> accounts;
     private static int numberAccounts;
     private static int initialBalance;
     
     // Constructor for the class which adds all accounts to an array
     public AccountManager(int numberAccounts, int initialBalance) 
     {
+        accounts = new ArrayList();
+        AccountManager.numberAccounts = numberAccounts;
+        AccountManager.initialBalance = initialBalance;
+        
+        // add accounts to accounts list
         for(int i = 0; i < numberAccounts; i++)
         {
-           //TODO: add accounts to accounts list 
+           accounts.add(i, new Account(i, initialBalance));
         }
     }
     
@@ -36,15 +42,26 @@ public class AccountManager implements LockTypes
     // Get the balance of the account
     public int read(int accountNumber, Transaction transaction)
     {
-       // get account and read balance
-       account = getAccount(accountNumber);
+       // get account
+       Account account = getAccount(accountNumber);
+       
+       // lock the server
+       (TransactionServer.lockManager).lock(account, transaction, READ_LOCK);
+       
+       //
        return account.getBalance();
     }
     
     // Set the balance of the account
     public int write(int accountNumber, Transaction transaction, int balance)
     {
-       // get account and set balance
+    // get account
+       Account account = getAccount(accountNumber);
+       
+       // lock the server
+       (TransactionServer.lockManager).lock(account, transaction, WRITE_LOCK);
+       
+       // set the balance
        account.setBalance(balance);
        return balance;
     }
