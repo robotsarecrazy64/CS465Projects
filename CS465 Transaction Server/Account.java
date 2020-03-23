@@ -3,6 +3,9 @@
  */
 public class Account 
 {
+	/**
+        Class Variables
+    */
     private static int balance;
     private static int accountNumber;
     

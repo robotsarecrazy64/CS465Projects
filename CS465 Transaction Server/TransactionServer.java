@@ -2,7 +2,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class TransactionServer extends Thread{
+public class TransactionServer extends Thread
+{
     /**
         Class Variables
     */
@@ -15,16 +16,46 @@ public class TransactionServer extends Thread{
     /**
         Default Constructor for connection
     */
-    public TransactionServer() {
+    public TransactionServer() 
+	{
+        try 
+		{
+            
+        }
+        catch (Exception error) 
+		{
+            // print the error if one occurred
+        }
+
+        try 
+		{
+            
+        }
+        catch () 
+		{
         
+        }
     }
 
-    public void log() {
+    public void log() 
+	{
         // allows you to attach any info to the transactions
     }
 
-    public void run() {
+    public void run() 
+	{
         // run method
+        while () 
+		{
+            try 
+			{
+                
+            }
+            catch (IOException error) 
+			{
+                // print the exception of one occured
+            }
+        }
     }
 }
 

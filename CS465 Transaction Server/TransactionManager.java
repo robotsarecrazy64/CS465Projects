@@ -3,21 +3,27 @@ import java.net.*;
 import Java.util.ArrayList;
 
 public class TransactionManager extends Thread {
+	/**
+        Class Variables
+    */
     private static int numTransactions = 0;
     private static final ArrayList<Transaction> transactionList = new ArrayList<>();
     
     /**
          Default Constructor
     */
-    public TransactionManager() {
+    public TransactionManager() 
+	{
      
     }
 
-    public ArrayList<Transaction> getTransactions() {
+    public ArrayList<Transaction> getTransactions() 
+	{
         // returns the list of current transactions
     }
 
-    public void runTransaction(Socket socket) {
+    public void runTransaction(Socket socket) 
+	{
     
     }
 }
