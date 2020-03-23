@@ -19,7 +19,7 @@ public class LockManager
 			// look for a lock associated with this lock
 			// if there isn't one, create one and add it to the hashtable
 			while (enumLocks.hasMoreElements())
-		`	{
+			{
 				Lock currentLock = (Lock) (enumLocks.nextElement();
 				if ()// this lock is in the hashtable
 				{
