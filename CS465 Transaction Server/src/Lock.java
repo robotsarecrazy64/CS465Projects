@@ -1,6 +1,7 @@
-import java.util.Vector;
-import java.lang.Object;
-import javax.ejb.LockType;
+import java.util.ArrayList;
+import transaction.server.transaction.Transaction;
+import transaction.server.TransactionServer;
+import transaction.server.lock.LockTypes;
 
 public class Lock 
 {
@@ -8,15 +9,16 @@ public class Lock
         Class Variables
     */
     private Object lockObject; // the object that lock is protecting
-    private Vector<E> holders; // transaction ids of current holders
+    private Vector<Transaction> holders; // transaction ids of current holders
     private LockType lockType; // current type of lock
 
 	/**
         Lock the current transaction
     */
-    public synchronized void acquire(TransactionManager transaction, LockType type) 
+    public synchronized void acquire(Transaction transaction, LockType curLockType) 
 	{
-        while ()// another trasaction doing its thing
+		// while another transaction holds the lock needed
+        while (checkConflict(curLockType))
 		{
 			try 
 			{
@@ -29,16 +31,16 @@ public class Lock
 		if (holders.isEmpty()) // no PIDs hold lock
 		{
 			holders.addElement(transaction);
-			lockType = type;
+			lockType = curLockType;
 		}
-		else if ()
+		else if ()// another transaction holds the lock, share it
 		{
-			if()
+			if() // this transaction not a holder
 			{
 				holders.addElement(transaction);
 			}
 		}
-		else if()
+		else if() // this transation is a holder but needs a more exclusive lock
 		{
 			lockType.promote();
 		}
@@ -47,7 +49,7 @@ public class Lock
 	/**
         Releases lock from current transaction
     */
-    public synchronized void release(TransID transaction) 
+    public synchronized void release(Transaction transaction) 
 	{
         holders.removeElement(transaction);
 		// set locktype to none
@@ -57,12 +59,12 @@ public class Lock
 	/**
         Checks if the lock needed is already in use
     */
-	public synchronized bool checkConflict(TransID transaction) 
+	public synchronized bool checkConflict(LockType curLockType) 
 	{
 		// implement method that checks for conflict
 		for( int iter = 0; iter < holders.size(); iter++)
 		{
-			if() // if the lock is in use in one of the transactions
+			if(iter.lockType) // if the lock is in use in one of the transactions
 			{
 				// there is a conflict
 				return true;

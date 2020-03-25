@@ -8,7 +8,7 @@ public class LockManager
     /**
         Finds the lock associated with the object if it exists and adds it to the hash table
     */
-    public void setLock(Object object, TrasnactionManager transaction, LockType type )
+    public void setLock(Object object, Transaction transaction, LockType type )
 	{
         Lock currentLock;
 		Enumeration enumLocks = locks.elements();
@@ -38,7 +38,7 @@ public class LockManager
 	/**
         Finds the lock associated with the transactions and releases it
     */
-    public synchronized void unlock(TransID transaction)
+    public synchronized void unlock(Transaction transaction)
 	{
         Enumeration enumLocks = locks.elements();
 		while (enumLocks.hasMoreElements())
