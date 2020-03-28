@@ -1,9 +1,11 @@
 import java.util.ArrayList;
 import transaction.server.transaction.Transaction;
-import transaction.server.TransactionServer;
-import transaction.server.lock.LockTypes;
+import transaction.server.account.Account;
+import java.util.HashMap;
+import java.util.Iterator;
 
-public class Lock 
+
+public class Lock implements LockTypes
 {
 	/**
         Class Variables
