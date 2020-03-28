@@ -1,12 +1,21 @@
 
-public class TransactionClient
+public class TransactionClient implements Runnable
 {
 
    private int numberTransactions;
+   private int numberAccounts;
+   private int initialBalance;
+   String host = null;
+   int port;
    
-   public TransactionClient()
+   public TransactionClient(int numberTransactions, int numberAccounts, 
+                            int initialBalance, String host, int port)
    {
-      
+      this.numberTransactions = numberTransactions;
+      this.numberAccounts = numberAccounts;
+      this.initialBalance = initialBalance;
+      this.host = host;
+      this.port = port;
    }
    
    @Override
@@ -27,7 +36,7 @@ public class TransactionClient
                int accountTo = (int)Math.floor(Math.random() + numberAccounts);
                int amount = (int)Math.ceil(Math.random() + initialBalance);
                int balance;
-               System.out.println("\tTransaction #" + transID + ", $" + amount + " " +
+               System.out.println("\tTransaction #" + transID + ", $" + amount + " " + 
                                   accountFrom + "=>" + accountTo + ".");
                
                balance = transaction.read(accountFrom);
@@ -41,7 +50,7 @@ public class TransactionClient
       }
    }
    
-   public static void main(String[], args)
+   public static void main(String[] args)
    {
       (new TransactionClient("../../config/TransactionClient.properties", 
                              "../../config/TransactionServer.properties")).start();

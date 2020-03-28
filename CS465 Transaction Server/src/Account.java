@@ -17,7 +17,7 @@ public class Account
     }
     
     // Returns the accounts certain balance
-    public void getBalance()
+    public int getBalance()
     {
        return balance;
     }

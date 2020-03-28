@@ -13,17 +13,17 @@ public class TransactionManager extends Thread {
          Default Constructor
     */
     public TransactionManager() 
-	{
+	 {
      
     }
 
     public ArrayList<Transaction> getTransactions() 
-	{
+	 {
         // returns the list of current transactions
     }
 
     public void runTransaction(Socket socket) 
-	{
+	 {
     
     }
 }
