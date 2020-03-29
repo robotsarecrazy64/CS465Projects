@@ -2,7 +2,7 @@ package transaction.server.account;
 import java.util.ArrayList;
 import transaction.server.transaction.Transaction;
 import transaction.server.TransactionServer;
-import transaction.server.lock.LockManager;
+import transaction.server.lock.Lock;
 import transaction.server.lock.LockTypes;
 
 /*
@@ -59,7 +59,7 @@ public class AccountManager implements LockTypes
        Account account = getAccount(accountNumber);
        
        // lock the server
-       (TransactionServer.LockManager).lock(account, transaction, READ_LOCK);
+       (TransactionServer.lockManager).lock(account, transaction, READ_LOCK);
        
        //
        return account.getBalance();
@@ -72,7 +72,7 @@ public class AccountManager implements LockTypes
        Account account = getAccount(accountNumber);
        
        // lock the server
-       (TransactionServer.LockManager).lock(account, transaction, WRITE_LOCK);
+       (TransactionServer.lockManager).lock(account, transaction, WRITE_LOCK);
        
        // set the balance
        account.setBalance(balance);

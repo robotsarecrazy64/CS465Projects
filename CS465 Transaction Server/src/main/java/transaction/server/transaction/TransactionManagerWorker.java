@@ -7,6 +7,8 @@ package transaction.server.transaction;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
+import java.net.Socket;
+import transaction.comm.Message;
 /**
  *
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
@@ -36,7 +38,7 @@ public class TransactionManagerWorker extends Thread
       {
          // try to get input from the client
       }
-      catch (IOexception error) 
+      catch (IOException error) 
       {
          // print the exception of one occured
       }

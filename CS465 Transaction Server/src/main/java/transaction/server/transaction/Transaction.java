@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package transaction.server.transaction;
+import utils.AbstractStringBuilder;
 import java.util.ArrayList;
 import transaction.server.lock.Lock;
 
@@ -21,7 +22,7 @@ public class Transaction {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public String getID() {
+    public AbstractStringBuilder getID() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

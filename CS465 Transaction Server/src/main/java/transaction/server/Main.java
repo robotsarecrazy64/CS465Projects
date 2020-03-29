@@ -5,10 +5,16 @@
  */
 package transaction.server;
 
+
+
 /**
  *
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
  */
 public class Main {
+    public void main(String args[])
+    {
+        
+    }
     
 }
