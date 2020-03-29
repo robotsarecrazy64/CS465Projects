@@ -1,9 +1,9 @@
-public class LockManager
+public class LockManager implements LockTypes
 {
 	/**
         Class Variables
     */
-    private HashMap<Account, Lock> locks; 
+    private static HashMap<Account, Lock> locks; 
 	private static boolean applyLocking;
 	
 	public LockManager(boolean applyLocking)
@@ -14,7 +14,7 @@ public class LockManager
     /**
         Finds the lock associated with the object if it exists and adds it to the hash table
     */
-    public void setLock(Account account, Transaction transaction, int lockType )
+    public void lock(Account account, Transaction transaction, int lockType )
 	{
 		// return, if we don't do locking
 		if (!applyLocking) return;
@@ -43,14 +43,18 @@ public class LockManager
     */
     public synchronized void unLock(Transaction transaction)
 	{
+		// if we don't do locking
 		if (!applyLocking) return;
 		
 		Iterator<Lock> lockIterator = transaction.getLocks().listIterator();
 		Lock currentLock;
+		
 		while(lockIterator.hasNext())
 		{
+	
 			currentLock = lockIterator.next();
 			
+			// releases lock associated with this transaction
 			currentLock.release(transaction);
 		}
 		/* old idea
@@ -66,7 +70,7 @@ public class LockManager
 		*/
     }
 	
-	public HashMap<Account, lock> getLocks()
+	public HashMap<Account, Lock> getLocks()
 	{
 		return locks;
 	}

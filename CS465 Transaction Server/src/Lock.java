@@ -11,13 +11,16 @@ public class Lock implements LockTypes
         Class Variables
     */
 	
-	// TODO: add comments describing each variable
+	// account that this lock protects
 	private final Account account;
 	
+	// the current lock type
 	private int currentLockType;
 	
+	// the current lock holders
 	private final ArrayList<Transaction> lockHolders;
 	
+	// the current lock requestors
 	private final HashMap<Transaction, Object[]> lockRequestors;
 	
 	public Lock(Account account)
@@ -47,8 +50,10 @@ public class Lock implements LockTypes
 			}
 		}
 		
+		// psuedo code from book implementation
 		if (lockHolders.isEmpty()) // no PIDs hold lock
 		{
+			// no tranactions hold this lock, add to holders and set lock
 			lockHolders.add(transaction);
 			currentLockType = newLockType;
 			transaction.addLock(this);
@@ -56,6 +61,7 @@ public class Lock implements LockTypes
 		
 		else if (!lockHolders.contains(transaction))
 		{
+			// another transaction holds the lock (read lock) so just share the read lock and add the transaction
 			Iterator <Transaction> lockIterator = lockHolders.iterator();
 			Transaction otherTransaction;
 			
@@ -65,12 +71,14 @@ public class Lock implements LockTypes
 				otherTransaction = lockIteractor.next();
 			}
 			
+			// add the transaction to the list of holders
 			lockHolders.add(transaction);
 			transaction.addLock(this);
 		}
 
 		else if(lockHolders.size() == 1 && currentLockType == READ_LOCK && newLockType == WRITE_LOCK) // this transation is a holder but needs a more exclusive lock
 		{
+			// the transaction is the lock holder, promote it
 			currentLockType = newLockType;
 		}
 		
@@ -85,9 +93,21 @@ public class Lock implements LockTypes
     */
     public synchronized void release(Transaction transaction) 
 	{
+		// transaction no longer holds this lock, remove it
         lockHolders.remove(transaction);
-		// set locktype to none
-		this.currentLockType = "EMPTY_LOCK"; // come back to this
+	
+		if (lockHolders.isEmpty())
+		{
+			// set locktype to none
+			currentLockType = EMPTY_LOCK;
+			if (lockRequestors.isEmpty())
+			{
+				// this lock is not used, so delete it
+				// TODO: how do i delete it??
+			}
+		}
+
+		// stops the waiting in aquire function
 		notifyAll();
     }
 	
@@ -142,7 +162,10 @@ public class Lock implements LockTypes
 	
 	public static String getLockTypeString(int lockType)
 	{
+		// in case of error
 		String lockString = "Locktype not implemented";
+		
+		// give string for all implemented types
 		switch (lockType)
 		{
 			case READ_LOCK:
@@ -174,6 +197,8 @@ public class Lock implements LockTypes
 		Iterator<Transaction> lockHoldersIterator = lockHolders.iterator();
 		Transaction otherTransaction;
 		StringBuilder transactionsString = new StringBuilder("");
+		
+		// gets the transaction for the lock info
 		 while(lockHoldersIterator.hasNext())
 		 {
 			 otherTransaction = lockHoldersIterator.next();
@@ -181,14 +206,18 @@ public class Lock implements LockTypes
 			 transactionsString.append(" ").append(otherTransaction.getID());
 		 }
 		 
+		 // copies info about the lock type and the transaction
 		 Object[] lockInfo = new Object[2];
 		 lockInfo[0] = lockTypes;
 		 lockInfo[1] = transactionsString.toString();
+		 
+		 // adds a new requestor for this lock
 		 lockRequestors.put(requestor, lockInfo);
 	}
 	
 	private void removeLockRequestor(Transaction requestor)
 	{
+		// no longer requesting the lock, so remove it
 		lockRequestors.remove(requestor);
 	}
 }
