@@ -1,6 +1,17 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package transaction.client;
 import java.util.Properties;
 import java.lang.StringBuffer;
 import com.bbn.openmap.PropertyHandler;
+/**
+ *
+ * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
+ */
+
 
 public class TransactionClient implements Runnable
 {

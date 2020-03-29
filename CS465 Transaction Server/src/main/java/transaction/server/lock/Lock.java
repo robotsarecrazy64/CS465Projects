@@ -1,8 +1,19 @@
+package transaction.server.lock;
 import java.util.ArrayList;
 import transaction.server.transaction.Transaction;
 import transaction.server.account.Account;
 import java.util.HashMap;
 import java.util.Iterator;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
+ */
 
 
 public class Lock implements LockTypes
@@ -33,6 +44,8 @@ public class Lock implements LockTypes
 
 	/**
         Lock the current transaction
+     * @param transaction
+     * @param newLockType
     */
     public synchronized void acquire(Transaction transaction, int newLockType) 
 	{
@@ -68,7 +81,7 @@ public class Lock implements LockTypes
 			// pretty sure this loop was just used to output stuff to the console, which i will most likely incorportate later for testing purposes
 			while (lockIterator.hasNext())
 			{
-				otherTransaction = lockIteractor.next();
+				otherTransaction = lockIterator.next();
 			}
 			
 			// add the transaction to the list of holders
@@ -90,6 +103,7 @@ public class Lock implements LockTypes
 
 	/**
         Releases lock from current transaction
+     * @param transaction
     */
     public synchronized void release(Transaction transaction) 
 	{
@@ -108,20 +122,20 @@ public class Lock implements LockTypes
 		}
 
 		// stops the waiting in aquire function
-		notifyAll();
+	notifyAll();
     }
 	
 	/**
         Checks if the lock needed is already in use
     */
-	public synchronized bool checkConflict(Transaction transaction, LockType curLockType) 
+	private boolean checkConflict(Transaction transaction, int newLockType) 
 	{
 		if (lockHolders.isEmpty())
 		{
 			// no locks are held
 			return false;
 		}
-		else if (lockholders.size() == 1 && lockHolders.contains(transaction))
+		else if (lockHolders.size() == 1 && lockHolders.contains(transaction))
 		{
 			// there is only one lock holder and it happens to be the transaction in question
 			return false;
@@ -141,7 +155,7 @@ public class Lock implements LockTypes
 			StringBuilder holders = new StringBuilder("");
 			while (lockIterator.hasNext())
 			{
-				otherTransaction = lockIteractor.next();
+				otherTransaction = lockIterator.next();
 				holders.append(" ").append(otherTransaction.getID());
 			}
 			

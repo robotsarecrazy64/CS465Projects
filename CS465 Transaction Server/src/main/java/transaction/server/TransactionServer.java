@@ -1,6 +1,20 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package transaction.server;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import transaction.server.account.AccountManager;
+import transaction.server.lock.LockManager;
+import transaction.server.transaction.TransactionManager;
+/**
+ *
+ * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
+ */
+
 
 public class TransactionServer extends Thread
 {
@@ -32,7 +46,7 @@ public class TransactionServer extends Thread
            
       }
       
-      catch () 
+      catch (IOException error) 
       {
         
       }
@@ -46,7 +60,7 @@ public class TransactionServer extends Thread
    public void run() 
    {
       // run method
-      while () 
+      while (true) 
       {
          try 
          {

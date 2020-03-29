@@ -1,3 +1,20 @@
+package transaction.server.lock;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import transaction.server.account.Account;
+import transaction.server.transaction.Transaction;
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
+ */
 public class LockManager implements LockTypes
 {
 	/**

@@ -1,6 +1,17 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package transaction.client;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+/**
+ *
+ * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
+ */
+
 
 //Not separated currently so no reason to import
 //import transaction.conn.Message;
@@ -57,3 +68,4 @@ public class TransactionServerProxy implements MessageTypes
       
    }
 }
+

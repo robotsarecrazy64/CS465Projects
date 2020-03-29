@@ -1,7 +1,20 @@
+package transaction.server.account;
 import java.util.ArrayList;
 import transaction.server.transaction.Transaction;
 import transaction.server.TransactionServer;
+import transaction.server.lock.LockManager;
 import transaction.server.lock.LockTypes;
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
+ */
 
 /*
  * Class that manages the accounts and their transactions
@@ -46,7 +59,7 @@ public class AccountManager implements LockTypes
        Account account = getAccount(accountNumber);
        
        // lock the server
-       (TransactionServer.lockManager).lock(account, transaction, READ_LOCK);
+       (TransactionServer.LockManager).lock(account, transaction, READ_LOCK);
        
        //
        return account.getBalance();
@@ -59,7 +72,7 @@ public class AccountManager implements LockTypes
        Account account = getAccount(accountNumber);
        
        // lock the server
-       (TransactionServer.lockManager).lock(account, transaction, WRITE_LOCK);
+       (TransactionServer.LockManager).lock(account, transaction, WRITE_LOCK);
        
        // set the balance
        account.setBalance(balance);
