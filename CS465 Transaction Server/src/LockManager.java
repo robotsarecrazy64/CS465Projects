@@ -3,43 +3,57 @@ public class LockManager
 	/**
         Class Variables
     */
-    private Hashtable locks; 
-
+    private HashMap<Account, Lock> locks; 
+	private static boolean applyLocking;
+	
+	public LockManager(boolean applyLocking)
+	{
+		locks = new HashMap<>();
+		this.applyLocking = applyLocking;
+	}
     /**
         Finds the lock associated with the object if it exists and adds it to the hash table
     */
-    public void setLock(Object object, Transaction transaction, LockType type )
+    public void setLock(Account account, Transaction transaction, int lockType )
 	{
-        Lock currentLock;
-		Enumeration enumLocks = locks.elements();
-		// assuming lock is new until set otherwise
-		int isNewLock = true;
+		// return, if we don't do locking
+		if (!applyLocking) return;
+		
+		// get the lock that is attached to this account
+        Lock lock;
+		
 		synchronized (this)
 		{
 			// look for a lock associated with this lock
 			// if there isn't one, create one and add it to the hashtable
-			while (enumLocks.hasMoreElements())
+			lock = locks.get(account);
+			
+			if(lock == null)
 			{
-				Lock currentLock = (Lock) (enumLocks.nextElement();
-				if ()// this lock is in the hashtable
-				{
-					isNewLock = false
-				}
-			}
-			if (isNewLock) // if lock is brand new
-			{
-				Lock newLock = new Lock();
-				// TODO: Add lock to hashtable
+				lock = new Lock(account);
+				locks.put(account, lock);
+				
 			}
 		}
-		currentLock.acquire(transaction, type);
+		lock.acquire(transaction, lockType);
     }
 
 	/**
         Finds the lock associated with the transactions and releases it
     */
-    public synchronized void unlock(Transaction transaction)
+    public synchronized void unLock(Transaction transaction)
 	{
+		if (!applyLocking) return;
+		
+		Iterator<Lock> lockIterator = transaction.getLocks().listIterator();
+		Lock currentLock;
+		while(lockIterator.hasNext())
+		{
+			currentLock = lockIterator.next();
+			
+			currentLock.release(transaction);
+		}
+		/* old idea
         Enumeration enumLocks = locks.elements();
 		while (enumLocks.hasMoreElements())
 		{
@@ -49,5 +63,11 @@ public class LockManager
 				currentLock.release(transaction);
 			}
 		}
+		*/
     }
+	
+	public HashMap<Account, lock> getLocks()
+	{
+		return locks;
+	}
 }

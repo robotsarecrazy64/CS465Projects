@@ -58,6 +58,8 @@ public class Lock implements LockTypes
 		{
 			Iterator <Transaction> lockIterator = lockHolders.iterator();
 			Transaction otherTransaction;
+			
+			// pretty sure this loop was just used to output stuff to the console, which i will most likely incorportate later for testing purposes
 			while (lockIterator.hasNext())
 			{
 				otherTransaction = lockIteractor.next();
@@ -75,7 +77,7 @@ public class Lock implements LockTypes
 		else
 		{
 			// do nothing
-		}
+		} 
     }
 
 	/**
@@ -83,8 +85,9 @@ public class Lock implements LockTypes
     */
     public synchronized void release(Transaction transaction) 
 	{
-        holders.removeElement(transaction);
+        lockHolders.remove(transaction);
 		// set locktype to none
+		this.currentLockType = "EMPTY_LOCK"; // come back to this
 		notifyAll();
     }
 	
@@ -95,31 +98,97 @@ public class Lock implements LockTypes
 	{
 		if (lockHolders.isEmpty())
 		{
+			// no locks are held
 			return false;
 		}
 		else if (lockholders.size() == 1 && lockHolders.contains(transaction))
 		{
+			// there is only one lock holder and it happens to be the transaction in question
+			return false;
+		}
+		
+		else if (currentLockType == READ_LOCK && newLockType == READ_LOCK)
+		{
+			// share lock
 			return false;
 		}
 		else 
 		{ // new ting
 			Iterator <Transaction> lockIterator = lockHolders.iterator();
 			Transaction otherTransaction;
+			
+			// can output holders into a string, helpful for testing
+			StringBuilder holders = new StringBuilder("");
 			while (lockIterator.hasNext())
 			{
 				otherTransaction = lockIteractor.next();
+				holders.append(" ").append(otherTransaction.getID());
 			}
+			
+			return true;
 		}
-		// implement method that checks for conflict
-		for( int iter = 0; iter < lockHolders.size(); iter++)
+		
+	}
+	
+	public synchronized int getLockType()
+	{
+		return currentLockType;
+	}
+	
+	public Account getAccount()
+	{
+		return account;
+	}
+	
+	public static String getLockTypeString(int lockType)
+	{
+		String lockString = "Locktype not implemented";
+		switch (lockType)
 		{
-			if(lockeHolder.at(iter).lockType) // if the lock is in use in one of the transactions
-			{
-				// there is a conflict
-				return true;
-			}
+			case READ_LOCK:
+				lockString = "READ_LOCK";
+				break;
+			case WRITE_LOCK:
+				lockString = "WRITE_LOCK";
+				break;
+			case EMPTY_LOCK:
+				lockString = "EMPTY_LOCK";
+				break;
 		}
-		// no conflict
-		return false;
+		
+		return lockString;
+	}
+	
+	public HashMap<Transaction, Object[]> getLockRequestors()
+	{
+		return lockRequestors;
+	}
+	
+	private void addLockRequestor(Transaction requestor, int newLockType)
+	{
+		int[] lockTypes = new int[2];
+		lockTypes[0] = currentLockType;
+		lockTypes[1] = newLockType;
+		
+		
+		Iterator<Transaction> lockHoldersIterator = lockHolders.iterator();
+		Transaction otherTransaction;
+		StringBuilder transactionsString = new StringBuilder("");
+		 while(lockHoldersIterator.hasNext())
+		 {
+			 otherTransaction = lockHoldersIterator.next();
+			 // assuming getID is implemented
+			 transactionsString.append(" ").append(otherTransaction.getID());
+		 }
+		 
+		 Object[] lockInfo = new Object[2];
+		 lockInfo[0] = lockTypes;
+		 lockInfo[1] = transactionsString.toString();
+		 lockRequestors.put(requestor, lockInfo);
+	}
+	
+	private void removeLockRequestor(Transaction requestor)
+	{
+		lockRequestors.remove(requestor);
 	}
 }
