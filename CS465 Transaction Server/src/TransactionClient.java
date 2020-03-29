@@ -1,3 +1,6 @@
+import java.util.Properties;
+import java.lang.StringBuffer;
+import com.bbn.openmap.PropertyHandler;
 
 public class TransactionClient implements Runnable
 {
@@ -7,15 +10,28 @@ public class TransactionClient implements Runnable
    private int initialBalance;
    String host = null;
    int port;
+   StringBuffer log;
    
-   public TransactionClient(int numberTransactions, int numberAccounts, 
-                            int initialBalance, String host, int port)
+   public TransactionClient(String clientPropertiesFile, String serverPropertiesFile)
    {
-      this.numberTransactions = numberTransactions;
-      this.numberAccounts = numberAccounts;
-      this.initialBalance = initialBalance;
-      this.host = host;
-      this.port = port;
+      try
+      {
+         Properties serverProperties = new PropertyHandler(serverPropertiesFiles);
+         host = serverProperties.getProperty("HOST");
+         port = Integer.parseInt(serverProperties.getProperty("PORT"));
+         numberAccounts = Integer.parseInt(serverProperties.getProperty("NUMBER_ACCOUNTS"));
+         initialBalance = Integer.parseInt(serverProperties.getProperty("INITIAL_BALANCE"));
+         
+         Properties clientProperties = new PropertyHandler(clientPropertiesFile);
+         numberTransactions = Integer.parseInt(clientProperties.getProperty("NUMBER_TRANSACTIONS"));
+      }
+      
+      catch(Exception error)
+      {
+         error.printStackTrace();
+      }
+      
+      log = new StringBuffer("");
    }
    
    @Override
