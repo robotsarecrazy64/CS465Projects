@@ -16,6 +16,9 @@ import java.net.Socket;
 
 public class TransactionServerProxy implements MessageTypes
 {
+   /**
+      Class Variables
+   */
    String host = null;
    int port;
    
@@ -32,12 +35,12 @@ public class TransactionServerProxy implements MessageTypes
    
    public int openTransaction()
    {
-      Message openMessage = new Message(OPEN_TRANSACTION, null);
+      Message openMessage = new Message(OPEN_TRANSACTION, null); // open message
 
       try 
       {
           
-         dbConnection = new Socket(host, port);
+         dbConnection = new Socket(host, port); // bind the socket to a port
          writeToNet = new ObjectOutputStream(dbConnection.getOutputStream());
          readFromNet = new ObjectInputStream(dbConnection.getInputStream());
          writeToNet.writeObject(openMessage);
@@ -47,6 +50,7 @@ public class TransactionServerProxy implements MessageTypes
       
       catch (Exception error)
       {
+         // Print the error if one occurred
          System.out.println("[TransactionServerProxy.openTransaction] Error occurred");
          error.printStackTrace();
       }
@@ -55,10 +59,11 @@ public class TransactionServerProxy implements MessageTypes
    
    public void closeTransaction()
    {
-      Message closeMessage = new Message(CLOSE_TRANSACTION, null);
+      Message closeMessage = new Message(CLOSE_TRANSACTION, null); // close message
 
       try 
       {
+          // Close connection
           writeToNet.writeObject(closeMessage);
           readFromNet.close();
           writeToNet.close();
@@ -67,6 +72,7 @@ public class TransactionServerProxy implements MessageTypes
       
       catch (Exception error) 
       {
+         // Print the error if one occurred
          System.out.println("[TransactionServerProxy.closeTransaction] Error occurred");
          error.printStackTrace();
       }
@@ -75,18 +81,19 @@ public class TransactionServerProxy implements MessageTypes
    public int read(int accountNumber)
    {
       
-      Message readMessage = new Message(READ_REQUEST, accountNumber);
-      Integer balance = null;
+      Message readMessage = new Message(READ_REQUEST, accountNumber); // read message
+      Integer balance = null; // create variable to store balance
       
       try
       {
          writeToNet.writeObject(readMessage);
-         balance = (Integer) readFromNet.readObject();
+         balance = (Integer) readFromNet.readObject();  // store the balance as an integer
          
       }
       
       catch (Exception error)
       {
+         // Print the error if one occurred
          System.out.println("[TransactionServerProxy.read] Error occured");
          error.printStackTrace();
       }
@@ -97,17 +104,18 @@ public class TransactionServerProxy implements MessageTypes
    public int write(int accountNumber, int amount)
    {
       Object[] content = new Object[]{accountNumber, amount};
-      Message writeMessage = new Message(WRITE_REQUEST, content);
-      Integer balance = null;
+      Message writeMessage = new Message(WRITE_REQUEST, content); // write message
+      Integer balance = null; // create variable to store balance
 
       try 
       {
           writeToNet.writeObject(writeMessage);
-          balance = (Integer) readFromNet.readObject();
+          balance = (Integer) readFromNet.readObject(); // store the balance as an integer
       }
       
       catch (Exception error) 
       {
+         // Print the error if one occurred
          System.out.println("[TransactionServerProxy.write] Error occured");
          error.printStackTrace();
       }

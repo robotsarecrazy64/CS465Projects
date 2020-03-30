@@ -15,18 +15,33 @@ import transaction.server.TransactionServer;
 * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
 */
 
+/**
+   Starts Transaction Worker Threads and stores array list of all transactions
+*/
 public class TransactionManager implements MessageTypes
 {
-  private static int numTransactions = 0;
-  private static final ArrayList<Transaction> transactionList = new ArrayList<>();
+  /**
+    Class Variables
+  */
+  private static int numTransactions = 0; // number of transactions
+  private static final ArrayList<Transaction> transactionList = new ArrayList<>(); // list of transactions
 
+  /**
+    Default Constructor
+  */
   public TransactionManager() {}
 
+  /**
+    Returns the list of transactions
+  */
   public ArrayList<Transaction> getTransactions()
   {
       return transactionList;
   }
 
+  /**
+    Runs a transaction
+  */
   public void runTransaction(Socket socket)
   {
       
@@ -87,11 +102,11 @@ public class TransactionManager implements MessageTypes
                         System.exit(1);
                     }
 
-                    // Processing message
+                    // Processing different message types
                     switch(message.getType())
                     {
                       //--------
-                      case OPEN_TRANSACTION:
+                      case OPEN_TRANSACTION: // open message
                       //--------
                         synchronized (transactionList)
                         {
@@ -105,6 +120,7 @@ public class TransactionManager implements MessageTypes
                         }
                         catch (IOException exception)
                         {
+                          // Prints the error if one occurred
                           System.out.println("[TransactionManagerWorker.run] OPEN_TRANSACTION - Error when writing transID");
                         }
 
@@ -128,6 +144,7 @@ public class TransactionManager implements MessageTypes
                         }
                         catch (IOException exception)
                         {
+                            // Prints the error if one occurred
                             System.out.println("[TransactionManagerWorker.run] CLOSE_TRANSACTION - Error when closing connection to client.");
                         }
 
@@ -155,6 +172,7 @@ public class TransactionManager implements MessageTypes
                         }
                         catch (IOException exception)
                         {
+                            // Prints the error if one occurred
                             System.out.println("[TransactionManagerWorker.run] READ_REQUEST - Eror when writing to object stream");
                         }
 
@@ -178,6 +196,7 @@ public class TransactionManager implements MessageTypes
                         }
                         catch (IOException exception)
                         {
+                             // Prints the error if one occurred
                              System.out.println("[TransactionManagerWorker.run] Warning: Message type not implemented"); 
                         }
                         transaction.log("[TransactionManagerWorker.run] WRITE_REQUEST <<<<<<<< account #" + accountNum + ", new balance $" + accountBalance);

@@ -17,7 +17,6 @@ import utils.PropertyHandler;
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
  */
 
-
 public class TransactionServer extends Thread
 {
    /**
@@ -38,7 +37,7 @@ public class TransactionServer extends Thread
 
       try 
       {
-           serverProperties = new PropertyHandler(serverPropertiesFile);
+           serverProperties = new PropertyHandler(serverPropertiesFile); // load the server properties file
       }
       catch (Exception error) 
       {
@@ -48,29 +47,30 @@ public class TransactionServer extends Thread
          System.exit(1);
       }
       
-	  transactionView = Boolean.valueOf(serverProperties.getProperty("TRANSACTION_VIEW"));
+	  transactionView = Boolean.valueOf(serverProperties.getProperty("TRANSACTION_VIEW")); // gets the transaction view from the properties file
 	  TransactionServer.transactionManager = new TransactionManager();
 	  System.out.println("[TransactionServer.TransactionServer] TransactionManager created");
 	  
-	  boolean applyLock = Boolean.valueOf(serverProperties.getProperty("APPLY_LOCKING"));
+	  boolean applyLock = Boolean.valueOf(serverProperties.getProperty("APPLY_LOCKING")); // gets the lock from the properties file
 	  TransactionServer.lockManager = new LockManager(applyLock);
 	  System.out.println("[TransactionServer.TransactionServer] LockManager created");
 	  
 	  int numAccounts = 0;
-	  numAccounts = Integer.parseInt(serverProperties.getProperty("NUMBER_ACCOUNTS"));
+	  numAccounts = Integer.parseInt(serverProperties.getProperty("NUMBER_ACCOUNTS")); // gets the number of accounts from the properties file
 	  int initBalance = 0;
-	  initBalance = Integer.parseInt(serverProperties.getProperty("INITIAL_BALANCE"));
+	  initBalance = Integer.parseInt(serverProperties.getProperty("INITIAL_BALANCE")); // gets the initial balance from the properties file
 	  
 	  TransactionServer.accountManager = new AccountManager(numAccounts, initBalance);
 	  System.out.println("[TransactionServer.TransactionServer] AccountManager created");
       try 
       {
-         serverSocket = new ServerSocket(Integer.parseInt(serverProperties.getProperty("PORT")));
+          serverSocket = new ServerSocket(Integer.parseInt(serverProperties.getProperty("PORT"))); // gets the port number from the properties file
 	      System.out.println("[TransactionServer.TransactionServer] ServerSocket created");
       }
       
       catch (IOException error) 
       {
+         // Prints the error if one occurred
          System.out.println("[TransactionServer.TransactionServer] Could not create Server Socket");
          error.printStackTrace();
          System.exit(1);
@@ -80,12 +80,12 @@ public class TransactionServer extends Thread
    @Override
    public void run() 
    {
-      // run method
+      // server loop
       while (true) 
       {
          try 
          {
-            transactionManager.runTransaction(serverSocket.accept());
+            transactionManager.runTransaction(serverSocket.accept()); // accept the connection that returns a socket
          }
          
          catch (IOException error) 

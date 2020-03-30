@@ -13,33 +13,39 @@ import utils.PropertyHandler;
 
 public class TransactionClient extends Thread
 {
-    public static String host;
-    public static int port;
+    /**
+        Class variables
+    */
+    public static String host; // host
+    public static int port; // port number
     
-    public static int numberTransactions;
-    public static int numberAccounts;
-    public static int initialBalance;
+    public static int numberTransactions; // number of transactions
+    public static int numberAccounts; // number of accoutns
+    public static int initialBalance; // initial balance
     
-    public static StringBuffer log;
+    public static StringBuffer log; // transaction log
     
+    /**
+        Default Constructor
+    */
     public TransactionClient(String clientPropertiesFile, String serverPropertiesFile)
     {
-        
         try
         {
-            Properties serverProperties = new PropertyHandler(serverPropertiesFile);
-            host = serverProperties.getProperty("HOST");
-            port = Integer.parseInt(serverProperties.getProperty("PORT"));
-            numberAccounts = Integer.parseInt(serverProperties.getProperty("NUMBER_ACCOUNTS"));
-            initialBalance = Integer.parseInt(serverProperties.getProperty("INITIAL_BALANCE"));
+            Properties serverProperties = new PropertyHandler(serverPropertiesFile); // Load the server properties file
+            host = serverProperties.getProperty("HOST"); // gets the Host from the server properties file
+            port = Integer.parseInt(serverProperties.getProperty("PORT")); // gets the port number from the server properties file
+            numberAccounts = Integer.parseInt(serverProperties.getProperty("NUMBER_ACCOUNTS")); // gets the number of accounts from the server properties file
+            initialBalance = Integer.parseInt(serverProperties.getProperty("INITIAL_BALANCE")); // gets the initial balance from the server properties file
       
-            Properties clientProperties = new PropertyHandler(clientPropertiesFile);
-            numberTransactions = Integer.parseInt(clientProperties.getProperty("NUMBER_TRANSACTIONS"));
+            Properties clientProperties = new PropertyHandler(clientPropertiesFile); // load the client properties file
+            numberTransactions = Integer.parseInt(clientProperties.getProperty("NUMBER_TRANSACTIONS")); // gets the number of transactions from the client properties file
             
          }
    
         catch(Exception error)
         {
+            // prints the error if one occurred
             error.printStackTrace();
         }
    

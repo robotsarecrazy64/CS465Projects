@@ -11,7 +11,7 @@ package transaction.server.lock;
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
  */
 
-// defines read and write locks
+// defines the different locks
 public interface LockTypes
 {
 	
