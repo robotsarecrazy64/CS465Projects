@@ -6,6 +6,8 @@
 package transaction.client;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import transaction.comm.Message;
+import transaction.comm.MessageTypes;
 import java.net.Socket;
 /**
  *
@@ -32,14 +34,17 @@ public class TransactionServerProxy implements MessageTypes
    {
       Message openMessage = new Message(OPEN_TRANSACTION, null);
 
-      try {
+      try 
+      {
          dbConnection = new Socket(host, port);
          writeToNet = new ObjectOutputStream(dbConnection.getOutputStream());
          writeToNet.writeObject(openMessage);
          readFromNet = new ObjectInputStream(dbConnection.getInputStream());
          transID = (Integer) readFromNet.readObject();
       }
-      catch (Exception error){
+      
+      catch (Exception error)
+      {
          System.out.println("[TransactionServerProxy.openTransaction] Error occurred");
          error.printStackTrace();
       }
@@ -50,13 +55,16 @@ public class TransactionServerProxy implements MessageTypes
    {
       Message closeMessage = new Message(CLOSE_TRANSACTION, null);
 
-      try {
+      try 
+      {
           writeToNet.writeObject(closeMessage);
           writeToNet.close();
           readFromNet.close();
           dbConnection.close();
       }
-      catch (Exception error) {
+      
+      catch (Exception error) 
+      {
          System.out.println("[TransactionServerProxy.closeTransaction] Error occurred");
          error.printStackTrace();
       }
@@ -88,11 +96,14 @@ public class TransactionServerProxy implements MessageTypes
       Object[] content = new Object[]{accountNumber, amount};
       Integer balance = null;
 
-      try {
+      try 
+      {
           writeToNet.writeObject(writeMessage);
           balance = (Integer) readFromNet.readObject();
       }
-      catch (Exception error) {
+      
+      catch (Exception error) 
+      {
          System.out.println("[TransactionServerProxy.write] Error occured");
          error.printStackTrace();
       }
