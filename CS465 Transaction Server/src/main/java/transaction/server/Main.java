@@ -64,6 +64,17 @@ public class Main {
         			{
         				System.out.print("Account #" + lock.getAccount().getNumber() + "is invloved in deadlock: ");
         				//print transactions that are stuck
+        				Iterator<Transaction> lockedTransactionIterator = lockRequestors.keySet().iterator();
+        				
+        				while(lockedTransactionIterator.hasNext())
+        				{
+        					transaction = lockedTransactionIterator.next();
+        					Onject[] lockInfo = lockRequestors.get(transcation);
+        					int[] lockTypes = (int[]) lockInfo[0];
+        					String lockHolders = (String) lockInfo[1];
+        					
+        					System.out.println("\n\tTransaction#" + transaction.getID() + " trying " + Lock.getLockTypeString(lockTypes[1] + ", waiting release "));
+        				}
         			}
         		}
         	}
