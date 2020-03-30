@@ -49,12 +49,12 @@ public class TransactionServer extends Thread
       }
       
 	  transaction = Boolean.valueOf(serverProperties.getProperty("TRANSACTION_VIEW"));
-	  TransactionServer manager = new TransactionManager();
-	  System.out.println("[TransactionServer.TransactionServer] Transaction Manager created");
+	  TransactionServer.transactionManager = new TransactionManager();
+	  System.out.println("[TransactionServer.TransactionServer] TransactionManager created");
 	  
 	  boolean applyLock = Boolean.valueOf(serverProperties.getProperty("APPLY_LOCKING"));
-	  TransactionServer lockManager = new LockManager(applyLock);
-	  System.out.println("[TransactionServer.TransactionServer] Lock Manager created");
+	  TransactionServer.lockManager = new LockManager(applyLock);
+	  System.out.println("[TransactionServer.TransactionServer] LockManager created");
 	  
 	  int numAccounts = 0;
 	  numAccounts = Integer.parseInt(serverProperties.getProperty("NUMBER_ACCOUNTS"));
@@ -62,11 +62,11 @@ public class TransactionServer extends Thread
 	  initBalance = Integer.parseInt(serverProperties.getProperty("INITIAL_BALANCE");
 	  
 	  TransactionServer.accountManager = new AccountManager(numAccounts, initBalance);
-	  System.out.println("[TransactionServer.TransactionServer] Account Manager created");
+	  System.out.println("[TransactionServer.TransactionServer] AccountManager created");
       try 
       {
-         socket = new ServerSocket(Integer.parseInt(serverProperties.getProperty("PORT"));
-	     System.out.println("[TransactionServer.TransactionServer] Server Socket created");
+         serverSocket = new ServerSocket(Integer.parseInt(serverProperties.getProperty("PORT"));
+	      System.out.println("[TransactionServer.TransactionServer] ServerSocket created");
       }
       
       catch (IOException error) 
