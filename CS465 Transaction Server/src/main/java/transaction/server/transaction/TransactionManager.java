@@ -29,6 +29,7 @@ public class TransactionManager extends Thread
 
   public void runTransaction(Socket socket)
   {
+      
       (new TransactionManagerWorker(socket)).start();
   }
 
@@ -92,7 +93,7 @@ public class TransactionManager extends Thread
                       //--------
                       case OPEN_TRANSACTION:
                       //--------
-                        synchronized (transaction)
+                        synchronized (transactionList)
                         {
                           transaction = new Transaction(numTransactions++);
                           transactionList.add(transaction);
@@ -111,68 +112,78 @@ public class TransactionManager extends Thread
 
                         break;
 
-                      //------
-                      case CLOSE_TRANSACTION:
-                      //------
+                        //------
+                        case CLOSE_TRANSACTION:
+                        //------
 
-                      TransactionServer.lockManager.unLock(transaction);
-                      transactionList.remove(transaction);
+                        TransactionServer.lockManager.unLock(transaction);
+                        transactionList.remove(transaction);
 
-                      try
-                      {
-                        readFromNet.close();
-                        writeToNet.close();
-                        client.close();
-                        keepgoing = false;
-                      }
-                      catch (IOException exception)
-                      {
-                        System.out.println("[TransactionManagerWorker.run] CLOSE_TRANSACTION - Error when closing connection to client.");
-                      }
+                        try
+                        {
+                            readFromNet.close();
+                            writeToNet.close();
+                            client.close();
+                            keepgoing = false;
+                        }
+                        catch (IOException exception)
+                        {
+                            System.out.println("[TransactionManagerWorker.run] CLOSE_TRANSACTION - Error when closing connection to client.");
+                        }
 
-                      transaction.log("[TransactionManagerWorker.run] CLOSE_TRANSACTION #" + transaction.getID());
+                        transaction.log("[TransactionManagerWorker.run] CLOSE_TRANSACTION #" + transaction.getID());
 
-                      // Final print out of all transaction's logs
-                      if (TransactionServer.transactionView)
-                      {
-                        System.out.println(transaction.getLog());
-                      }
+                        // Final print out of all transaction's logs
+                        if (TransactionServer.transactionView)
+                        {
+                            System.out.println(transaction.getLog());
+                        }
 
-                      break;
+                        break;
 
-                      //-----
-                      case READ_REQUEST:
-                      //-----
+                        //-----
+                        case READ_REQUEST:
+                        //-----
 
-                      accountNum = (Integer) message.getContent();
-                      transaction.log("[TransactionManagerWorker.run] READ_REQUEST >>>>>>> account #" + accountNum);
-                      accountBalance = TransactionServer.accountManager.read(accountNum, transaction);
+                        accountNum = (Integer) message.getContent();
+                        transaction.log("[TransactionManagerWorker.run] READ_REQUEST >>>>>>> account #" + accountNum);
+                        accountBalance = TransactionServer.accountManager.read(accountNum, transaction);
 
-                      try
-                      {
-                        writeToNet.writeObject((Integer) accountBalance);
-                      }
-                      catch (IOException exception)
-                      {
-                        System.out.println("[TransactionManagerWorker.run] READ_REQUEST - Eror when writing to object stream");
-                      }
+                        try
+                        {
+                            writeToNet.writeObject((Integer) accountBalance);
+                        }
+                        catch (IOException exception)
+                        {
+                            System.out.println("[TransactionManagerWorker.run] READ_REQUEST - Eror when writing to object stream");
+                        }
 
-                      transaction.log("[TransactionManagerWorker.run] READ_REQUEST <<<<<<< account #" + accountNum + ", balance $" + accountBalance);
+                        transaction.log("[TransactionManagerWorker.run] READ_REQUEST <<<<<<< account #" + accountNum + ", balance $" + accountBalance);
 
-                      break;
+                        break;
 
-                      //------
-                      case WRITE_REQUEST:
-                      //------
+                        //------
+                        case WRITE_REQUEST:
+                        //------
 
-                          Object[] content = (Object[]) message.getContent();
-                      accountNum = ((Integer) content[0]);
-                      accountBalance = ((Integer) content[1]);
-                      transaction.log("[TransactionManagerWorker.run] WRITE_REQUEST >>>>>>> account #" + accountNum + ", new balance $" + accountBalance);
-
-                      break;
-
-                      default:
+                        Object[] content = (Object[]) message.getContent();
+                        accountNum = ((Integer) content[0]);
+                        accountBalance = ((Integer) content[1]);
+                        transaction.log("[TransactionManagerWorker.run] WRITE_REQUEST >>>>>>> account #" + accountNum + ", new balance $" + accountBalance);
+                        accountBalance = TransactionServer.accountManager.write(accountNum, transaction, accountBalance);
+                        
+                        try 
+                        {
+                            writeToNet.writeObject((Integer) accountBalance);
+                        }
+                        catch (IOException exception)
+                        {
+                             System.out.println("[TransactionManagerWorker.run] Warning: Message type not implemented"); 
+                        }
+                        transaction.log("[TransactionManagerWorker.run] WRITE_REQUEST <<<<<<<< account #" + accountNum + ", new balance $" + accountBalance);
+                        break;
+                        
+                        default:
                         System.out.println("[TransactionManagerWorker.run] Warning: Message type not implemented");
                     }
             }

@@ -72,6 +72,7 @@ public class TransactionServerProxy implements MessageTypes
    
    public int read(int accountNumber)
    {
+      
       Message readMessage = new Message(READ_REQUEST, accountNumber);
       Integer balance = null;
       
