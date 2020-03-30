@@ -5,24 +5,11 @@
  */
 package transaction.client;
 import java.util.Properties;
-import java.lang.StringBuffer;
-import com.bbn.openmap.PropertyHandler;
+import utils.PropertieHandler;
 /**
  *
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
  */
-
-public class TransactionClient extends Thread
-{
-   /**
-      Class Variables
-   */
-   private static int numberTransactions;
-   private static int numberAccounts;
-   private static int initialBalance;
-   public static String host = null;
-   public static int port;
-   public static StringBuffer log;
 
    public TransactionClient(String clientPropertiesFile, String serverPropertiesFile)
    {
