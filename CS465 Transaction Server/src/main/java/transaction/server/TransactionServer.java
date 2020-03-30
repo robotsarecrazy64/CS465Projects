@@ -77,11 +77,6 @@ public class TransactionServer extends Thread
       }
    }
 
-   public void log() 
-   {
-      // allows you to attach any info to the transactions
-   }
-
    public void run() 
    {
       // run method
