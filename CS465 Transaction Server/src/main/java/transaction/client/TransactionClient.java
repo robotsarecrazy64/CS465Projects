@@ -61,17 +61,18 @@ public class TransactionClient extends Thread
                int transID = transaction.openTransaction();
                System.out.println("Transaction #" + transID + " started.");
                
-               int accountFrom = (int)Math.floor(Math.random() + numberAccounts);
-               int accountTo = (int)Math.floor(Math.random() + numberAccounts);
-               int amount = (int)Math.ceil(Math.random() + initialBalance);
+               
+               int accountFrom = (int)Math.floor(Math.random() * numberAccounts);
+               int accountTo = (int)Math.floor(Math.random() * numberAccounts);
+               int amount = (int)Math.ceil(Math.random() * initialBalance);
                int balance;
                System.out.println("\tTransaction #" + transID + ", $" + amount + " " + 
                                   accountFrom + "=>" + accountTo + ".");
                
-               System.out.println("Acc: "+ accountTo);
+               
                
                balance = transaction.read(accountFrom);
-               
+               System.out.println("Acc: "+ accountTo);
                transaction.write(accountFrom, balance - amount);
                
                balance = transaction.read(accountTo);

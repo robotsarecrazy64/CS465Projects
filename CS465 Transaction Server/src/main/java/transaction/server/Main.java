@@ -103,7 +103,7 @@ public class Main {
             	
             	while(accountIterator.hasNext())
             	{
-                   //System.out.println(total);
+                   System.out.println(total);
             	   account = accountIterator.next();
             	   total += account.getBalance();
             	}

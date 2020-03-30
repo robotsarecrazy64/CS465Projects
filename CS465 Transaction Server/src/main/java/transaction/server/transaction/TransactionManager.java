@@ -8,14 +8,14 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import transaction.comm.Message;
-import static transaction.comm.MessageTypes.*;
+import  transaction.comm.MessageTypes;
 import transaction.server.TransactionServer;
 /**
 *
 * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
 */
 
-public class TransactionManager extends Thread
+public class TransactionManager implements MessageTypes
 {
   private static int numTransactions = 0;
   private static final ArrayList<Transaction> transactionList = new ArrayList<>();
