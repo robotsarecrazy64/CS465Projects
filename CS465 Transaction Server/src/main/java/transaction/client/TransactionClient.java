@@ -11,18 +11,6 @@ import utils.PropertieHandler;
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
  */
 
-
-public class TransactionClient extends Thread
-{
-   private int numberTransactions;
-   private int numberAccounts;
-   private int initialBalance;
-   
-   public static String host;
-   public static int port;
-   
-   public static StringBuffer log;
-   
    public TransactionClient(String clientPropertiesFile, String serverPropertiesFile)
    {
       try
