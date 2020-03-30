@@ -7,11 +7,6 @@ package utils;
 import java.io.File;
 import java.util.StringTokenizer;
 /**
- *
- * @author Jessica
- */
-
-/**
  * Klasse [FileUtils]
  * <p>
  * Utilities um Files, Directories, Pfade usw.
@@ -50,7 +45,7 @@ public class FileUtils{
  */
 	public static String[] getClassPathes(){
 		String[] classPathes = new String[1];
-		String classPath = System.getProperty(“java.class.path”);
+                String classPath = System.getProperty("java.class.path");
 		//System.out.println(“Klassenpfade: ” + classPath);
 		StringTokenizer tokenizer = new StringTokenizer(classPath, File.pathSeparator);
 		int count = 0;

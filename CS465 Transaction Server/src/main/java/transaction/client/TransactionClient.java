@@ -5,33 +5,46 @@
  */
 package transaction.client;
 import java.util.Properties;
-import utils.PropertieHandler;
+import utils.PropertyHandler;
 /**
  *
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
  */
 
-   public TransactionClient(String clientPropertiesFile, String serverPropertiesFile)
-   {
-      try
-      {
-         Properties serverProperties = new PropertyHandler(serverPropertiesFiles);
-         host = serverProperties.getProperty("HOST");
-         port = Integer.parseInt(serverProperties.getProperty("PORT"));
-         numberAccounts = Integer.parseInt(serverProperties.getProperty("NUMBER_ACCOUNTS"));
-         initialBalance = Integer.parseInt(serverProperties.getProperty("INITIAL_BALANCE"));
-         
-         Properties clientProperties = new PropertyHandler(clientPropertiesFile);
-         numberTransactions = Integer.parseInt(clientProperties.getProperty("NUMBER_TRANSACTIONS"));
-      }
+public class TransactionClient extends Thread
+{
+    public static String host;
+    public static int port;
+    
+    public static int numberTransactions;
+    public static int numberAccounts;
+    public static int initialBalance;
+    
+    public static StringBuffer log;
+    
+    public TransactionClient(String clientPropertiesFile, String serverPropertiesFile)
+    {
+        
+        try
+        {
+            Properties serverProperties = new PropertyHandler(serverPropertiesFile);
+            host = serverProperties.getProperty("HOST");
+            port = Integer.parseInt(serverProperties.getProperty("PORT"));
+            numberAccounts = Integer.parseInt(serverProperties.getProperty("NUMBER_ACCOUNTS"));
+            initialBalance = Integer.parseInt(serverProperties.getProperty("INITIAL_BALANCE"));
       
-      catch(Exception error)
-      {
-         error.printStackTrace();
-      }
-      
-      log = new StringBuffer("");
-   }
+            Properties clientProperties = new PropertyHandler(clientPropertiesFile);
+            numberTransactions = Integer.parseInt(clientProperties.getProperty("NUMBER_TRANSACTIONS"));
+         }
+   
+        catch(Exception error)
+        {
+            error.printStackTrace();
+        }
+   
+            log = new StringBuffer("");
+        }
+   
    
    @Override
    public void run()
@@ -67,8 +80,8 @@ import utils.PropertieHandler;
    
    public static void main(String[] args)
    {
-      (new TransactionClient("../../config/TransactionClient.properties", 
-                             "../../config/TransactionServer.properties")).start();
+      (new TransactionClient("D:/Programming/Repos/CS465Projects/CS465 Transaction Server/src/main/java/utils/TransactionClient.properties", 
+                             "D:/Programming/Repos/CS465Projects/CS465 Transaction Server/src/main/java/utils/TransactionServer.properties")).start();
    }
    
 }

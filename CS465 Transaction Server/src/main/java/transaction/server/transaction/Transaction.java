@@ -4,8 +4,9 @@
  * and open the template in the editor.
  */
 package transaction.server.transaction;
-import utils.AbstractStringBuilder;
+
 import java.util.ArrayList;
+import transaction.server.TransactionServer;
 import transaction.server.lock.Lock;
 
 /**
@@ -14,16 +15,45 @@ import transaction.server.lock.Lock;
  */
 public class Transaction {
 
-    public ArrayList<Lock> getLocks() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    int transID;
+    ArrayList<Lock> locks = null;
+    
+    StringBuffer log = new StringBuffer("");
+    
+    Transaction(int transID)
+    {
+       this.transID = transID;
+       this.locks = new ArrayList();
+    }
+    
+    public int getID()
+    {
+       return transID;
+    }
+    
+    public ArrayList<Lock> getLocks() 
+    {
+       return locks;
     }
 
-    public void addLock(Lock aThis) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void addLock(Lock lock) 
+    {
+       locks.add(lock);
     }
 
-    public AbstractStringBuilder getID() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void log (String logString) 
+    {
+       log.append("\n").append(logString);
+       
+       if(!TransactionServer.transaction)
+       {
+          System.out.println("Transaction #" + this.getID() + ((this.getID() < 10) ? " " : "") + logString);
+       }
+    }
+    
+    public StringBuffer getLog()
+    {
+       return log;
     }
     
 }

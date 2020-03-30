@@ -27,7 +27,7 @@ public class Main {
         
         else
         {
-        	new TransactionServer("../../config/TransactionServer.properties").start();
+        	new TransactionServer("D:/Programming/Repos/CS465Projects/CS465 Transaction Server/src/main/java/utils/TransactionServer.properties").start();
         }
         
         new Thread()
@@ -49,16 +49,16 @@ public class Main {
             	System.out.println("\n\n====================== DEADLOCKED ACCOUNTS INFORMATION ======================");
             	
             	Lock lock;
-            	Transaction transcation;
-            	HashMap <Account, lock> locks = TransactionServer.lockManager.getLocks();
-            	Iterator<java.util.concurrent.locks.Lock> lockIterator = locks.values().interator();
+            	Transaction transaction;
+            	HashMap <Account, Lock> locks = TransactionServer.lockManager.getLocks();
+            	Iterator<Lock> lockIterator = locks.values().iterator();
             	
             	while(lockIterator.hasNext())
             	{
-            		lock = lockIterator.hasNext();
-            		HashMap<Transaction, Object[]> lockRequestors = lock.getLockRequesters();
+            		lock = lockIterator.next();
+            		HashMap<Transaction, Object[]> lockRequestors = lock.getLockRequestors();
             		
-            		if(!lockRequesters.isEmpty())
+            		if(!lockRequestors.isEmpty())
             		{
             			System.out.print("Account #" + lock.getAccount().getNumber() + "is invloved in deadlock: ");
             			//print transactions that are stuck
@@ -67,13 +67,13 @@ public class Main {
             			while(lockedTransactionIterator.hasNext())
             			{
             				transaction = lockedTransactionIterator.next();
-            				Onject[] lockInfo = lockRequestors.get(transcation);
+            				Object[] lockInfo = lockRequestors.get(transaction);
             				int[] lockTypes = (int[]) lockInfo[0];
             				String lockHolders = (String) lockInfo[1];
             				
             				System.out.println("\n\tTransaction #" + transaction.getID() + " trying " + 
-            				                    Lock.getLockTypeString(lockTypes[1] + ", waiting release " + 
-            				                    Lock.getLockTypeStringlockTypes[0]) + ", help by transaction(s)" + lockHolders);
+            				                    Lock.getLockTypeString(lockTypes[1]) + ", waiting release " + 
+            				                    Lock.getLockTypeString(lockTypes[0]) + ", help by transaction(s)" + lockHolders);
             			}
             		}
             	}
