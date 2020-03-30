@@ -38,8 +38,8 @@ public class TransactionServerProxy implements MessageTypes
       {
          dbConnection = new Socket(host, port);
          writeToNet = new ObjectOutputStream(dbConnection.getOutputStream());
-         writeToNet.writeObject(openMessage);
          readFromNet = new ObjectInputStream(dbConnection.getInputStream());
+         writeToNet.writeObject(openMessage);
          transID = (Integer) readFromNet.readObject();
       }
       
@@ -58,8 +58,8 @@ public class TransactionServerProxy implements MessageTypes
       try 
       {
           writeToNet.writeObject(closeMessage);
-          writeToNet.close();
           readFromNet.close();
+          writeToNet.close();
           dbConnection.close();
       }
       

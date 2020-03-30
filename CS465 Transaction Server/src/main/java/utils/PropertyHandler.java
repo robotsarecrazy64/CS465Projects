@@ -65,19 +65,19 @@ public class PropertyHandler extends Properties {
             return propertyFile;
         }
         // ... in the directory, where the program was started
-        String dirString = System.getProperty(“user.dir”);
+        String dirString = System.getProperty("user.dir");
         String completeString = dirString + File.separator + propertyFileString;
         if ((propertyFile = new File(completeString)).exists()) {
             return propertyFile;
         }
         // ... in Home-directory of the user
-        dirString = System.getProperty(“user.home”);
+        dirString = System.getProperty("user.home");
         completeString = dirString + File.separator + propertyFileString;
         if ((propertyFile = new File(completeString)).exists()) {
             return propertyFile;
         }
         // ... in the directory where Java keeps its own property files
-        dirString = System.getProperty(“java.home”) + File.separator + “lib”;
+        dirString = System.getProperty("java.home") + File.separator + "lib";
         completeString = dirString + File.separator + propertyFileString;
         if ((propertyFile = new File(completeString)).exists()) {
             return propertyFile;
@@ -90,6 +90,6 @@ public class PropertyHandler extends Properties {
                 return propertyFile;
             }
         }
-        throw new FileNotFoundException(“[PropertyHandler.PropertyHandler]Configuration file \“” + propertyFileString + “\” not found!“);
+        throw new FileNotFoundException("[PropertyHandler.PropertyHandler]Configuration file \"" + propertyFileString + "\" not found!");
     }
 }

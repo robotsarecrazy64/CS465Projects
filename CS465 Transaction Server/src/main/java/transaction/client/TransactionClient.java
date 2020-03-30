@@ -80,8 +80,8 @@ public class TransactionClient extends Thread
    
    public static void main(String[] args)
    {
-      (new TransactionClient("../../config/TransactionClient.properties", 
-                             "../../config/TransactionServer.properties")).start();
+      (new TransactionClient("D:/Programming/Repos/CS465Projects/CS465 Transaction Server/src/main/java/utils/TransactionClient.properties", 
+                             "D:/Programming/Repos/CS465Projects/CS465 Transaction Server/src/main/java/utils/TransactionServer.properties")).start();
    }
    
 }

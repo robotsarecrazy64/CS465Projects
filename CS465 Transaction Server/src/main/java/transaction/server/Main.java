@@ -27,7 +27,7 @@ public class Main {
         
         else
         {
-        	new TransactionServer("../../config/TransactionServer.properties").start();
+        	new TransactionServer("D:/Programming/Repos/CS465Projects/CS465 Transaction Server/src/main/java/utils/TransactionServer.properties").start();
         }
         
         new Thread()

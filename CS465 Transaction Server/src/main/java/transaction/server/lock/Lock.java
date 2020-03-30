@@ -57,7 +57,7 @@ public class Lock implements LockTypes
 				addLockRequestor(transaction, newLockType);
 				wait();
 				removeLockRequestor(transaction);
-			} catch (InterruptedException except)
+			} catch (InterruptedException exception)
 			{
 				// send error
 			}
@@ -107,8 +107,8 @@ public class Lock implements LockTypes
     */
     public synchronized void release(Transaction transaction) 
 	{
-		// transaction no longer holds this lock, remove it
-        lockHolders.remove(transaction);
+            // transaction no longer holds this lock, remove it
+            lockHolders.remove(transaction);
 	
 		if (lockHolders.isEmpty())
 		{
@@ -121,7 +121,7 @@ public class Lock implements LockTypes
 			}
 		}
 
-		// stops the waiting in aquire function
+        // stops the waiting in aquire function
 	notifyAll();
     }
 	
@@ -147,7 +147,7 @@ public class Lock implements LockTypes
 			return false;
 		}
 		else 
-		{ // new ting
+		{      
 			Iterator <Transaction> lockIterator = lockHolders.iterator();
 			Transaction otherTransaction;
 			
