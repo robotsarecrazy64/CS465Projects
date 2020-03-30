@@ -11,27 +11,26 @@ import utils.PropertieHandler;
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
  */
 
-   public TransactionClient(String clientPropertiesFile, String serverPropertiesFile)
+public class TransactionClient(String clientPropertiesFile, String serverPropertiesFile)
+{
+   try
    {
-      try
-      {
-         Properties serverProperties = new PropertyHandler(serverPropertiesFiles);
-         host = serverProperties.getProperty("HOST");
-         port = Integer.parseInt(serverProperties.getProperty("PORT"));
-         numberAccounts = Integer.parseInt(serverProperties.getProperty("NUMBER_ACCOUNTS"));
-         initialBalance = Integer.parseInt(serverProperties.getProperty("INITIAL_BALANCE"));
-         
-         Properties clientProperties = new PropertyHandler(clientPropertiesFile);
-         numberTransactions = Integer.parseInt(clientProperties.getProperty("NUMBER_TRANSACTIONS"));
-      }
+      Properties serverProperties = new PropertyHandler(serverPropertiesFiles);
+      host = serverProperties.getProperty("HOST");
+      port = Integer.parseInt(serverProperties.getProperty("PORT"));
+      numberAccounts = Integer.parseInt(serverProperties.getProperty("NUMBER_ACCOUNTS"));
+      initialBalance = Integer.parseInt(serverProperties.getProperty("INITIAL_BALANCE"));
       
-      catch(Exception error)
-      {
-         error.printStackTrace();
-      }
-      
-      log = new StringBuffer("");
+      Properties clientProperties = new PropertyHandler(clientPropertiesFile);
+      numberTransactions = Integer.parseInt(clientProperties.getProperty("NUMBER_TRANSACTIONS"));
    }
+   
+   catch(Exception error)
+   {
+      error.printStackTrace();
+   }
+   
+   log = new StringBuffer("");
    
    @Override
    public void run()
