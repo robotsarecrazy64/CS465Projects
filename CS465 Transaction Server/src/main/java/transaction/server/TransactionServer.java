@@ -24,7 +24,7 @@ public class TransactionServer extends Thread
       Class Variables
    */
    static ServerSocket serverSocket;
-   public static boolean transaction;
+   public static boolean transactionView = true;
    public static AccountManager accountManager = null;
    public static TransactionManager transactionManager = null;
    public static LockManager lockManager = null;
@@ -48,7 +48,7 @@ public class TransactionServer extends Thread
          System.exit(1);
       }
       
-	  transaction = Boolean.valueOf(serverProperties.getProperty("TRANSACTION_VIEW"));
+	  transactionView = Boolean.valueOf(serverProperties.getProperty("TRANSACTION_VIEW"));
 	  TransactionServer.transactionManager = new TransactionManager();
 	  System.out.println("[TransactionServer.TransactionServer] TransactionManager created");
 	  
@@ -77,6 +77,7 @@ public class TransactionServer extends Thread
       }
    }
 
+   @Override
    public void run() 
    {
       // run method

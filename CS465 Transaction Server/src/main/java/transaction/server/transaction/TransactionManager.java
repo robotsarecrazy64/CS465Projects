@@ -133,7 +133,7 @@ public class TransactionManager extends Thread
                       transaction.log("[TransactionManagerWorker.run] CLOSE_TRANSACTION #" + transaction.getID());
 
                       // Final print out of all transaction's logs
-                      if (TransactionServer.transaction)
+                      if (TransactionServer.transactionView)
                       {
                         System.out.println(transaction.getLog());
                       }
@@ -165,7 +165,7 @@ public class TransactionManager extends Thread
                       case WRITE_REQUEST:
                       //------
 
-                      Object[] content = (Object[]) message.getContent();
+                          Object[] content = (Object[]) message.getContent();
                       accountNum = ((Integer) content[0]);
                       accountBalance = ((Integer) content[1]);
                       transaction.log("[TransactionManagerWorker.run] WRITE_REQUEST >>>>>>> account #" + accountNum + ", new balance $" + accountBalance);

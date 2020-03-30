@@ -35,6 +35,7 @@ public class TransactionClient extends Thread
       
             Properties clientProperties = new PropertyHandler(clientPropertiesFile);
             numberTransactions = Integer.parseInt(clientProperties.getProperty("NUMBER_TRANSACTIONS"));
+            
          }
    
         catch(Exception error)
@@ -67,7 +68,14 @@ public class TransactionClient extends Thread
                System.out.println("\tTransaction #" + transID + ", $" + amount + " " + 
                                   accountFrom + "=>" + accountTo + ".");
                
+               System.out.println("Acc: "+ accountTo);
+               
                balance = transaction.read(accountFrom);
+               
+               transaction.write(accountFrom, balance - amount);
+               
+               balance = transaction.read(accountTo);
+               
                transaction.write(accountTo, balance + amount);
                
                transaction.closeTransaction();

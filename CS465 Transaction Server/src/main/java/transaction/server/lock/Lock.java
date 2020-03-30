@@ -49,14 +49,17 @@ public class Lock implements LockTypes
     */
     public synchronized void acquire(Transaction transaction, int newLockType) 
 	{
+                transaction.log("[Lock.aquire]       | try " + getLockTypeString(newLockType) + " on account # " + account.getNumber());
 		// while another transaction holds the lock needed
-        while (checkConflict(transaction, newLockType))
+                while (checkConflict(transaction, newLockType))
 		{
 			try 
 			{
-				addLockRequestor(transaction, newLockType);
-				wait();
-				removeLockRequestor(transaction);
+                            transaction.log("[Lock.aquire]       | ---> wait to set " + getLockTypeString(newLockType) + " on account # " + account.getNumber());    
+                            addLockRequestor(transaction, newLockType);
+                            wait();
+                            removeLockRequestor(transaction);
+                            transaction.log("[Lock.aquire]       | ---> woke up, setting " + getLockTypeString(newLockType) + " on account # " + account.getNumber());
 			} catch (InterruptedException exception)
 			{
 				// send error
@@ -70,6 +73,8 @@ public class Lock implements LockTypes
 			lockHolders.add(transaction);
 			currentLockType = newLockType;
 			transaction.addLock(this);
+                        
+                        transaction.log("[Lock.aquire]       | ---> lock set to " + getLockTypeString(newLockType) + " on account # " + account.getNumber());
 		}
 		
 		else if (!lockHolders.contains(transaction))
@@ -78,11 +83,16 @@ public class Lock implements LockTypes
 			Iterator <Transaction> lockIterator = lockHolders.iterator();
 			Transaction otherTransaction;
 			
+                        StringBuilder logString = new StringBuilder("[Lock.aquire]       | share " + getLockTypeString(currentLockType) + " on account # " + account.getNumber());
+                        
 			// pretty sure this loop was just used to output stuff to the console, which i will most likely incorportate later for testing purposes
 			while (lockIterator.hasNext())
 			{
 				otherTransaction = lockIterator.next();
+                                logString.append("").append(otherTransaction.getID());
 			}
+                        
+                        transaction.log(logString.toString());
 			
 			// add the transaction to the list of holders
 			lockHolders.add(transaction);
@@ -92,12 +102,14 @@ public class Lock implements LockTypes
 		else if(lockHolders.size() == 1 && currentLockType == READ_LOCK && newLockType == WRITE_LOCK) // this transation is a holder but needs a more exclusive lock
 		{
 			// the transaction is the lock holder, promote it
+                        transaction.log("[Lock.aquire]       | promote " + getLockTypeString(currentLockType) + " on account # " + account.getNumber());
 			currentLockType = newLockType;
 		}
 		
 		else
 		{
 			// do nothing
+                    transaction.log("[Lock.aquire]       | ---> ignore setting " + getLockTypeString(newLockType) + " on account # " + account.getNumber());
 		} 
     }
 
@@ -133,17 +145,20 @@ public class Lock implements LockTypes
 		if (lockHolders.isEmpty())
 		{
 			// no locks are held
+                        transaction.log("[Lock.checkConflict]       | current lock " + getLockTypeString(currentLockType) + " on account # " + account.getNumber() + ", no holds");
 			return false;
 		}
 		else if (lockHolders.size() == 1 && lockHolders.contains(transaction))
 		{
 			// there is only one lock holder and it happens to be the transaction in question
-			return false;
+			transaction.log("[Lock.isConflict]       | current lock " + getLockTypeString(currentLockType) + " on account # " + account.getNumber() + ", holds a lock");
+                        return false;
 		}
 		
 		else if (currentLockType == READ_LOCK && newLockType == READ_LOCK)
 		{
 			// share lock
+                    transaction.log("[Lock.aquire]       | current lock " + getLockTypeString(currentLockType) + " on account # " + account.getNumber() + ", sharing lock");
 			return false;
 		}
 		else 
@@ -158,7 +173,7 @@ public class Lock implements LockTypes
 				otherTransaction = lockIterator.next();
 				holders.append(" ").append(otherTransaction.getID());
 			}
-			
+			transaction.log("[Lock.isConflict]       | current lock " + getLockTypeString(currentLockType) + " held by transaction(s) " + holders + " on account #:" + account.getNumber());
 			return true;
 		}
 		

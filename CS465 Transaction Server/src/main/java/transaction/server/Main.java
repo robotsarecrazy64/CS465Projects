@@ -18,7 +18,7 @@ import transaction.server.lock.Lock;
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
  */
 public class Main {
-    public void main(String args[])
+    public static void main(String args[])
     {
         if(args.length == 1)
         {
