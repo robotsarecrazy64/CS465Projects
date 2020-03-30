@@ -5,6 +5,9 @@
  */
 package transaction.server;
 
+/**
+   Imports
+*/
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,14 +20,22 @@ import transaction.server.lock.Lock;
  *
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
  */
+ 
+/**
+    Main class that runs the Transaction Server with Locking
+*/
 public class Main {
+	/**
+      Main method that accepts a custom port number
+	*/
     public static void main(String args[])
     {
+        // If the user passes in a properties file, use it
         if(args.length == 1)
         {
         	new TransactionServer(args[0]).start();
         }
-        
+        // Otherwise look in the default properties file location
         else
         {
         	new TransactionServer("D:/Programming/Repos/CS465Projects/CS465 Transaction Server/src/main/java/utils/TransactionServer.properties").start();
@@ -36,11 +47,12 @@ public class Main {
             {
             	try
             	{
-            		Thread.sleep(10000);
+            		Thread.sleep(10000); // Sleep for 10 seconds
             	}
             	
             	catch(InterruptedException error)
             	{
+					// Print the error if one occurs
             		System.out.println("Error sleeping in transaction #3");
             		error.printStackTrace();
             	}
@@ -53,6 +65,7 @@ public class Main {
             	HashMap <Account, Lock> locks = TransactionServer.lockManager.getLocks();
             	Iterator<Lock> lockIterator = locks.values().iterator();
             	
+				// Iterates through each lock and print all info each lock has
             	while(lockIterator.hasNext())
             	{
             		lock = lockIterator.next();
@@ -100,7 +113,7 @@ public class Main {
             	Iterator<Account> accountIterator = accounts.iterator();
             	Account account;
             	int total = 0;
-            	
+            	// print out the account balances
             	while(accountIterator.hasNext())
             	{
                    System.out.println(total);
