@@ -7,6 +7,9 @@ package transaction.server.transaction;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import transaction.comm.Message;
+import static transaction.comm.MessageTypes.*;
+import transaction.server.TransactionServer;
 /**
 *
 * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
@@ -21,12 +24,12 @@ public class TransactionManager extends Thread
 
   public ArrayList<Transaction> getTransactions()
   {
-      return transactions;
+      return transactionList;
   }
 
   public void runTransaction(Socket socket)
   {
-      (new TransactionManagerWorker(client)).start();
+      (new TransactionManagerWorker(socket)).start();
   }
 
   // Objects of this inner class run transactions, one thread represents one transaction
@@ -48,18 +51,18 @@ public class TransactionManager extends Thread
     boolean keepgoing = true;
 
     // The constructor just opens up the network channels
-    private TransactionManagerWorker(Socket socket)
+    private TransactionManagerWorker(Socket curClient)
     {
 
-            this.client = client;
+            this.client = curClient;
 
             // Setting up object streams
             try
             {
-                    readFromNet = net ObjectInputStream(client.getInputStream());
+                    readFromNet = new ObjectInputStream(client.getInputStream());
                     writeToNet = new ObjectOutputStream(client.getOutputStream());
             }
-            catch (IOexception exception)
+            catch (IOException exception)
             {
                     System.out.println("[TransactionManagerWorker.run] Failed to open object streams");
                     exception.printStackTrace();
@@ -89,10 +92,10 @@ public class TransactionManager extends Thread
                       //--------
                       case OPEN_TRANSACTION:
                       //--------
-                        synchronized (transactions)
+                        synchronized (transaction)
                         {
-                          transaction = new Transaction(transactionCounter++);
-                          transactions.add(transaction);
+                          transaction = new Transaction(numTransactions++);
+                          transactionList.add(transaction);
                         }
 
                         try
@@ -112,8 +115,8 @@ public class TransactionManager extends Thread
                       case CLOSE_TRANSACTION:
                       //------
 
-                      TransanctionServer.lockManger.unLock(transaction);
-                      transactions.remove(transaction);
+                      TransactionServer.lockManager.unLock(transaction);
+                      transactionList.remove(transaction);
 
                       try
                       {
@@ -130,7 +133,7 @@ public class TransactionManager extends Thread
                       transaction.log("[TransactionManagerWorker.run] CLOSE_TRANSACTION #" + transaction.getID());
 
                       // Final print out of all transaction's logs
-                      if (TransanctionServer.transactionView)
+                      if (TransactionServer.transaction)
                       {
                         System.out.println(transaction.getLog());
                       }
@@ -141,20 +144,20 @@ public class TransactionManager extends Thread
                       case READ_REQUEST:
                       //-----
 
-                      accountNumber = (Integer) message.getContent();
-                      transaction.log("[TransactionManagerWorker.run] READ_REQUEST >>>>>>> account #" + accountNumber);
-                      balance = TransanctionServer.accountManager.read(accountNumber, transaction);
+                      accountNum = (Integer) message.getContent();
+                      transaction.log("[TransactionManagerWorker.run] READ_REQUEST >>>>>>> account #" + accountNum);
+                      accountBalance = TransactionServer.accountManager.read(accountNum, transaction);
 
                       try
                       {
-                        writeToNet.writeObject((Integer) balance);
+                        writeToNet.writeObject((Integer) accountBalance);
                       }
                       catch (IOException exception)
                       {
                         System.out.println("[TransactionManagerWorker.run] READ_REQUEST - Eror when writing to object stream");
                       }
 
-                      transaction.log("[TransactionManagerWorker.run] READ_REQUEST <<<<<<< account #" + accountNumber + ", balance $" + balance);
+                      transaction.log("[TransactionManagerWorker.run] READ_REQUEST <<<<<<< account #" + accountNum + ", balance $" + accountBalance);
 
                       break;
 
@@ -163,9 +166,9 @@ public class TransactionManager extends Thread
                       //------
 
                       Object[] content = (Object[]) message.getContent();
-                      accountNumber = ((Integer) content[0]);
-                      balance = ((Integer) content[1]);
-                      transaction.log("[TransactionManagerWorker.run] WRITE_REQUEST >>>>>>> account #" + accountNumber + ", new balance $" + balance);
+                      accountNum = ((Integer) content[0]);
+                      accountBalance = ((Integer) content[1]);
+                      transaction.log("[TransactionManagerWorker.run] WRITE_REQUEST >>>>>>> account #" + accountNum + ", new balance $" + accountBalance);
 
                       break;
 

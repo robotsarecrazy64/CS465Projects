@@ -23,11 +23,11 @@ public class TransactionServer extends Thread
    /**
       Class Variables
    */
-   static ServerSocket socket;
+   static ServerSocket serverSocket;
    public static boolean transaction;
-   public static AccountManager account;
-   public static TransactionManager transactionManager;
-   public static LockManager lock;
+   public static AccountManager accountManager = null;
+   public static TransactionManager transactionManager = null;
+   public static LockManager lockManager = null;
    
    /**
       Default Constructor for connection
@@ -59,13 +59,13 @@ public class TransactionServer extends Thread
 	  int numAccounts = 0;
 	  numAccounts = Integer.parseInt(serverProperties.getProperty("NUMBER_ACCOUNTS"));
 	  int initBalance = 0;
-	  initBalance = Integer.parseInt(serverProperties.getProperty("INITIAL_BALANCE");
+	  initBalance = Integer.parseInt(serverProperties.getProperty("INITIAL_BALANCE"));
 	  
 	  TransactionServer.accountManager = new AccountManager(numAccounts, initBalance);
 	  System.out.println("[TransactionServer.TransactionServer] AccountManager created");
       try 
       {
-         serverSocket = new ServerSocket(Integer.parseInt(serverProperties.getProperty("PORT"));
+         serverSocket = new ServerSocket(Integer.parseInt(serverProperties.getProperty("PORT")));
 	      System.out.println("[TransactionServer.TransactionServer] ServerSocket created");
       }
       
@@ -84,7 +84,7 @@ public class TransactionServer extends Thread
       {
          try 
          {
-            transactionManager.runTransaction(socket.accept());
+            transactionManager.runTransaction(serverSocket.accept());
          }
          
          catch (IOException error) 

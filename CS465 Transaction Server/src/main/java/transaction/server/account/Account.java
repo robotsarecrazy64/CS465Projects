@@ -51,4 +51,9 @@ public class Account
     {
        balance += depositAmount;
     }
+    
+    public int getNumber()
+    {
+        return accountNumber;
+    }
 }
