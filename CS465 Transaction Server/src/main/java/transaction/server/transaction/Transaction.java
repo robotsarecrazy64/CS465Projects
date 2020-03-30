@@ -45,7 +45,7 @@ public class Transaction {
     {
        log.append("\n").append(logString);
        
-       if(!TransactionServer.transaction)
+       if(!TransactionServer.transactionView)
        {
           System.out.println("Transaction #" + this.getID() + ((this.getID() < 10) ? " " : "") + logString);
        }

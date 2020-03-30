@@ -19,6 +19,7 @@ public class Message implements MessageTypes, Serializable
    {
       this.type = type;
       this.content = content;
+      
    }
    
    public Message(int type)

@@ -35,6 +35,7 @@ public class TransactionClient extends Thread
       
             Properties clientProperties = new PropertyHandler(clientPropertiesFile);
             numberTransactions = Integer.parseInt(clientProperties.getProperty("NUMBER_TRANSACTIONS"));
+            
          }
    
         catch(Exception error)
@@ -60,14 +61,22 @@ public class TransactionClient extends Thread
                int transID = transaction.openTransaction();
                System.out.println("Transaction #" + transID + " started.");
                
-               int accountFrom = (int)Math.floor(Math.random() + numberAccounts);
-               int accountTo = (int)Math.floor(Math.random() + numberAccounts);
-               int amount = (int)Math.ceil(Math.random() + initialBalance);
+               
+               int accountFrom = (int)Math.floor(Math.random() * numberAccounts);
+               int accountTo = (int)Math.floor(Math.random() * numberAccounts);
+               int amount = (int)Math.ceil(Math.random() * initialBalance);
                int balance;
                System.out.println("\tTransaction #" + transID + ", $" + amount + " " + 
                                   accountFrom + "=>" + accountTo + ".");
                
+               
+               
                balance = transaction.read(accountFrom);
+               System.out.println("Acc: "+ accountTo);
+               transaction.write(accountFrom, balance - amount);
+               
+               balance = transaction.read(accountTo);
+               
                transaction.write(accountTo, balance + amount);
                
                transaction.closeTransaction();

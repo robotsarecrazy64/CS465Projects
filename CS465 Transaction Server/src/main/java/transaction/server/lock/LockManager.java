@@ -50,6 +50,7 @@ public class LockManager implements LockTypes
 				lock = new Lock(account);
 				locks.put(account, lock);
 				
+                                transaction.log("[LockManager.setLock]       | lock created, account #" + account.toString());
 			}
 		}
 		lock.acquire(transaction, lockType);
@@ -89,6 +90,7 @@ public class LockManager implements LockTypes
 	
 	public HashMap<Account, Lock> getLocks()
 	{
+            
 		return locks;
 	}
 }

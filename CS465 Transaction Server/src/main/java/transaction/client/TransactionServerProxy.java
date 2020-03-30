@@ -36,11 +36,13 @@ public class TransactionServerProxy implements MessageTypes
 
       try 
       {
+          
          dbConnection = new Socket(host, port);
          writeToNet = new ObjectOutputStream(dbConnection.getOutputStream());
          readFromNet = new ObjectInputStream(dbConnection.getInputStream());
          writeToNet.writeObject(openMessage);
          transID = (Integer) readFromNet.readObject();
+         System.out.println("transID: " + transID);
       }
       
       catch (Exception error)
@@ -72,6 +74,7 @@ public class TransactionServerProxy implements MessageTypes
    
    public int read(int accountNumber)
    {
+      
       Message readMessage = new Message(READ_REQUEST, accountNumber);
       Integer balance = null;
       
@@ -79,6 +82,7 @@ public class TransactionServerProxy implements MessageTypes
       {
          writeToNet.writeObject(readMessage);
          balance = (Integer) readFromNet.readObject();
+         
       }
       
       catch (Exception error)

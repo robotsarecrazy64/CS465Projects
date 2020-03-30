@@ -18,7 +18,7 @@ import transaction.server.lock.Lock;
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
  */
 public class Main {
-    public void main(String args[])
+    public static void main(String args[])
     {
         if(args.length == 1)
         {
@@ -96,12 +96,14 @@ public class Main {
             	System.out.println("\n\n====================== BRANCH TOTAL ======================");
             	
             	ArrayList<Account> accounts = TransactionServer.accountManager.getAccounts();
+                
             	Iterator<Account> accountIterator = accounts.iterator();
             	Account account;
             	int total = 0;
             	
             	while(accountIterator.hasNext())
             	{
+                   System.out.println(total);
             	   account = accountIterator.next();
             	   total += account.getBalance();
             	}
