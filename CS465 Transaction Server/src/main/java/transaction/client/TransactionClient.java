@@ -12,17 +12,18 @@ import com.bbn.openmap.PropertyHandler;
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
  */
 
-
-public class TransactionClient implements Runnable
+public class TransactionClient extends Thread
 {
+   /**
+      Class Variables
+   */
+   private static int numberTransactions;
+   private static int numberAccounts;
+   private static int initialBalance;
+   public static String host = null;
+   public static int port;
+   public static StringBuffer log;
 
-   private int numberTransactions;
-   private int numberAccounts;
-   private int initialBalance;
-   String host = null;
-   int port;
-   StringBuffer log;
-   
    public TransactionClient(String clientPropertiesFile, String serverPropertiesFile)
    {
       try

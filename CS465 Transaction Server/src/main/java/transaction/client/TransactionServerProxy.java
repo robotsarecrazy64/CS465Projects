@@ -12,11 +12,6 @@ import java.net.Socket;
  * @author Jessica Smith, Jesse Rodriguez, John Jacobelli
  */
 
-
-//Not separated currently so no reason to import
-//import transaction.conn.Message;
-//import transaction.conn.MessageTypes;
-
 public class TransactionServerProxy implements MessageTypes
 {
    String host = null;
@@ -35,12 +30,36 @@ public class TransactionServerProxy implements MessageTypes
    
    public int openTransaction()
    {
-      
+      Message openMessage = new Message(OPEN_TRANSACTION, null);
+
+      try {
+         dbConnection = new Socket(host, port);
+         writeToNet = new ObjectOutputStream(dbConnection.getOutputStream());
+         writeToNet.writeObject(openMessage);
+         readFromNet = new ObjectInputStream(dbConnection.getInputStream());
+         transID = (Integer) readFromNet.readObject();
+      }
+      catch (Exception error){
+         System.out.println("[TransactionServerProxy.openTransaction] Error occurred");
+         error.printStackTrace();
+      }
+      return transID;
    }
    
-   public int closeTransaction()
+   public void closeTransaction()
    {
-      
+      Message closeMessage = new Message(CLOSE_TRANSACTION, null);
+
+      try {
+          writeToNet.writeObject(closeMessage);
+          writeToNet.close();
+          readFromNet.close();
+          dbConnection.close();
+      }
+      catch (Exception error) {
+         System.out.println("[TransactionServerProxy.closeTransaction] Error occurred");
+         error.printStackTrace();
+      }
    }
    
    public int read(int accountNumber)
@@ -65,7 +84,19 @@ public class TransactionServerProxy implements MessageTypes
    
    public int write(int accountNumber, int amount)
    {
-      
+      Message writeMessage = new Message(WRITE_REQUEST, content);
+      Object[] content = new Object[]{accountNumber, amount};
+      Integer balance = null;
+
+      try {
+          writeToNet.writeObject(writeMessage);
+          balance = (Integer) readFromNet.readObject();
+      }
+      catch (Exception error) {
+         System.out.println("[TransactionServerProxy.write] Error occured");
+         error.printStackTrace();
+      }
+      return balance;
    }
 }
 
