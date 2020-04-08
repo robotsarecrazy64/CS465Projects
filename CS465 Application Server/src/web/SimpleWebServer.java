@@ -1,5 +1,6 @@
 package web;
 
+import appserver.client.PlusOneClient;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -108,7 +109,7 @@ public class SimpleWebServer extends GenericServer {
                     }
 
                     try {
-                        System.err.println("File requested: " + SimpleWebServer.documentRoot + "\"" + fileString + "\"");
+                        System.err.println("File to serve: " + "\"" + fileString + "\"");
                         fileToServe = new File(SimpleWebServer.documentRoot, fileString);
                         FileInputStream fis = new FileInputStream(fileToServe);
                         byte[] theData = new byte[(int) fileToServe.length()];
