@@ -1,3 +1,4 @@
+
 package utils;
 
 import java.io.File;
@@ -6,9 +7,9 @@ import java.util.StringTokenizer;
 
 
 /**
- * Class [FileUtils]
+ * Klasse [FileUtils]
  * <p>
- * Utilities for handling files, directories, pathes and so on ...
+ * Utilities um Files, Directories, Pfade usw.
  *
  * @author Prof. Dr.-Ing. Wolf-Dieter Otte
  * @version Feb. 2000
@@ -17,9 +18,10 @@ public class FileUtils{
 
 
 /** 
- * This method translates paths and packet names into corresponding platform dependent paths:
- * e.g. a path "/foo/boo" in the UNIX world would result in a path 
- * "\foo\boo" in the twisted Windoofs pseudo world. The "wrongChar" would be '\'.
+ * Diese Methode setzt Pfadbezeichnungen bzw. Packagebezeichnungen in 
+ * plattformabhaengig korrekte Pfadbezeichnungen um. So wuede z.B.
+ * eine in der Unixwelt uebliche Pfadbezeichnung "/foo/boo" fuer Windows
+ * umgesetzt werden in "\foo\boo" (der "wrongChar" waere hier mit '/' anzugeben).
  */
 	public static String getProperPathString(String pathString, char wrongChar){
 		
@@ -37,13 +39,13 @@ public class FileUtils{
 	
 	
 /** 
- * This method reads the value of the CLASSPATH-variable
- * and splits it into an array of Strings each representing one path..
+ * Diese Methode liest den CLASSPATH-String ein und spaltet ihn
+ * in ein String-Feld einzelner Pfade auf.
  */
 	public static String[] getClassPathes(){
 		String[] classPathes = new String[1];
 		String classPath = System.getProperty("java.class.path");
-		System.err.println("Classpathes: " + classPath);
+		//System.err.println("Klassenpfade: " + classPath);
 
 		StringTokenizer tokenizer = new StringTokenizer(classPath, File.pathSeparator);
 
@@ -57,11 +59,13 @@ public class FileUtils{
 			classPathes[count] = token;
 			oldClassPathes = classPathes;
 			classPathes = new String[++count + 1];
+			//System.err.println("piep!");
 			System.arraycopy(oldClassPathes, 0, classPathes, 0, count);
 		}
-		// shrink by one
+		// Schrumpfen um eins
 		oldClassPathes = classPathes;
 		classPathes = new String[count];
+		//System.err.println("piep!");
 		System.arraycopy(oldClassPathes, 0, classPathes, 0, count);
 		
 		return classPathes;
