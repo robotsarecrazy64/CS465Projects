@@ -15,6 +15,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import utils.PropertyHandler;
@@ -31,29 +32,65 @@ public class Satellite extends Thread {
     private ConnectivityInfo satelliteInfo = new ConnectivityInfo();
     private ConnectivityInfo serverInfo = new ConnectivityInfo();
     private HTTPClassLoader classLoader = null;
-    private Hashtable toolsCache = null;
+    private Hashtable<String, Tool> toolsCache = null;
 
     public Satellite(String satellitePropertiesFile, String classLoaderPropertiesFile, String serverPropertiesFile) {
 
         // read this satellite's properties and populate satelliteInfo object,
         // which later on will be sent to the server
         // ...
-        
+        // do we need super here?
+        super(satellitePropertiesFile);
+
+        try {
+            // init static variables with properties read 
+            Properties properties;
+            // need to pass info into satelliteInfo object
+            properties = new PropertyHandler(satellitePropertiesFile);
+            satelliteInfo.setName(properties.getProperty("NAME"));
+            satelliteInfo.setPort(Integer.parseInt(properties.getProperty("PORT")));
+            System.out.println("Satellite " + satelliteInfo.getName() + " has port #: " + satelliteInfo.getPort());
+        } catch (Exception e) {
+            System.err.println("Properties file " + satellitePropertiesFile + " not found, exiting ...");
+            System.exit(1);
+        }
         
         // read properties of the application server and populate serverInfo object
         // other than satellites, the as doesn't have a human-readable name, so leave it out
         // ...
-        
+        try {
+            // init static variables with properties read 
+            Properties properties;
+            // need to pass info into serverInfo object
+            properties = new PropertyHandler(serverPropertiesFile);
+            serverInfo.setHost(properties.getProperty("HOST"));
+            serverInfo.setPort(Integer.parseInt(properties.getProperty("PORT")));
+            System.out.println("Application server has host: " + serverInfo.getHost() + " and has port #: " + serverInfo.getPort());
+        } catch (Exception e) {
+            System.err.println("Properties file " + serverPropertiesFile + " not found, exiting ...");
+            System.exit(1);
+        }
         
         // read properties of the code server and create class loader
         // -------------------
         // ...
-
+        try {
+            // init static variables with properties read 
+            Properties properties;
+            // need to pass info into serverInfo object
+            properties = new PropertyHandler(classLoaderPropertiesFile);
+            // create HTTPClassLoader object with read-in property data
+            classLoader = new HTTPClassLoader(properties.getProperty("HOST"), Integer.parseInt(properties.getProperty("PORT")));
+            System.out.println("Class loader has host: " + properties.getProperty("HOST") + " and has port #: " + Integer.parseInt(properties.getProperty("PORT")));
+        } catch (Exception e) {
+            System.err.println("Properties file " + classLoaderPropertiesFile + " not found, exiting ...");
+            System.exit(1);
+        }
         
         // create tools cache
         // -------------------
         // ...
-        
+        toolsCache = new Hashtable<>();
     }
 
     @Override
@@ -124,7 +161,10 @@ public class Satellite extends Thread {
 
     public static void main(String[] args) {
         // start the satellite
-        Satellite satellite = new Satellite(args[0], args[1], args[2]);
+        // change back to:
+        // Satellite satellite = new Satellite(args[0], args[1], args[2]);
+        // after finished developing
+        Satellite satellite = new Satellite("../../config/Satellite.Earth.properties", "../../config/WebServer.properties", "../../config/Server.properties");
         satellite.run();
     }
 }
