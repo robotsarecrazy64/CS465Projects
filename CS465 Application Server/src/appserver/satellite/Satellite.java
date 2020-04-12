@@ -19,6 +19,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import utils.PropertyHandler;
+import java.io.PrintStream;
 
 /**
  * Class [Satellite] Instances of this class represent computing nodes that execute jobs by
@@ -33,6 +34,11 @@ public class Satellite extends Thread {
     private ConnectivityInfo serverInfo = new ConnectivityInfo();
     private HTTPClassLoader classLoader = null;
     private Hashtable<String, Tool> toolsCache = null;
+    Properties satelliteProperties;
+    Properties serverProperties;
+    Properties classLoaderProperties;
+    static ServerSocket serverSocket;
+    static int port;
 
     public Satellite(String satellitePropertiesFile, String classLoaderPropertiesFile, String serverPropertiesFile) {
 
@@ -44,11 +50,10 @@ public class Satellite extends Thread {
 
         try {
             // init static variables with properties read 
-            Properties properties;
             // need to pass info into satelliteInfo object
-            properties = new PropertyHandler(satellitePropertiesFile);
-            satelliteInfo.setName(properties.getProperty("NAME"));
-            satelliteInfo.setPort(Integer.parseInt(properties.getProperty("PORT")));
+            satelliteProperties = new PropertyHandler(satellitePropertiesFile);
+            satelliteInfo.setName(satelliteProperties.getProperty("NAME"));
+            satelliteInfo.setPort(Integer.parseInt(satelliteProperties.getProperty("PORT")));
             System.out.println("Satellite " + satelliteInfo.getName() + " has port #: " + satelliteInfo.getPort());
         } catch (Exception e) {
             System.err.println("Properties file " + satellitePropertiesFile + " not found, exiting ...");
@@ -60,11 +65,10 @@ public class Satellite extends Thread {
         // ...
         try {
             // init static variables with properties read 
-            Properties properties;
             // need to pass info into serverInfo object
-            properties = new PropertyHandler(serverPropertiesFile);
-            serverInfo.setHost(properties.getProperty("HOST"));
-            serverInfo.setPort(Integer.parseInt(properties.getProperty("PORT")));
+            serverProperties = new PropertyHandler(serverPropertiesFile);
+            serverInfo.setHost(serverProperties.getProperty("HOST"));
+            serverInfo.setPort(Integer.parseInt(serverProperties.getProperty("PORT")));
             System.out.println("Application server has host: " + serverInfo.getHost() + " and has port #: " + serverInfo.getPort());
         } catch (Exception e) {
             System.err.println("Properties file " + serverPropertiesFile + " not found, exiting ...");
@@ -76,12 +80,11 @@ public class Satellite extends Thread {
         // ...
         try {
             // init static variables with properties read 
-            Properties properties;
             // need to pass info into serverInfo object
-            properties = new PropertyHandler(classLoaderPropertiesFile);
+            classLoaderProperties = new PropertyHandler(classLoaderPropertiesFile);
             // create HTTPClassLoader object with read-in property data
-            classLoader = new HTTPClassLoader(properties.getProperty("HOST"), Integer.parseInt(properties.getProperty("PORT")));
-            System.out.println("Class loader has host: " + properties.getProperty("HOST") + " and has port #: " + Integer.parseInt(properties.getProperty("PORT")));
+            classLoader = new HTTPClassLoader(classLoaderProperties.getProperty("HOST"), Integer.parseInt(classLoaderProperties.getProperty("PORT")));
+            System.out.println("Class loader has host: " + classLoaderProperties.getProperty("HOST") + " and has port #: " + Integer.parseInt(classLoaderProperties.getProperty("PORT")));
         } catch (Exception e) {
             System.err.println("Properties file " + classLoaderPropertiesFile + " not found, exiting ...");
             System.exit(1);
@@ -98,13 +101,19 @@ public class Satellite extends Thread {
 
         // register this satellite with the SatelliteManager on the server
         // ---------------------------------------------------------------
-        // ...
+        // ignore for now
         
         
         // create server socket
         // ---------------------------------------------------------------
         // ...
-        
+        try {
+            serverSocket = new ServerSocket(satelliteInfo.getPort());
+
+        } catch (IOException ioe) {
+            System.err.println("IOException" + ioe.getMessage());
+            ioe.printStackTrace();
+        }
         
         // start taking job requests in a server loop
         // ---------------------------------------------------------------
@@ -127,21 +136,43 @@ public class Satellite extends Thread {
 
         @Override
         public void run() {
+            
             // setting up object streams
             // ...
-            
-            // reading message
-            // ...
-            
-            switch (message.getType()) {
-                case JOB_REQUEST:
-                    // processing job request
-                    // ...
-                    break;
-
-                default:
-                    System.err.println("[SatelliteThread.run] Warning: Message type not implemented");
+            try {
+                writeToNet = new ObjectOutputStream(jobRequest.getOutputStream());
+                readFromNet = new ObjectInputStream(jobRequest.getInputStream());
             }
+            catch (Exception exception)
+            {
+                System.out.println("[Satellite.run] Failed to open object streams");
+                exception.printStackTrace();
+                System.exit(1);
+            }
+                while(true)
+                {
+                // reading message
+                // ...
+                    try
+                    {
+                        message = (Message) readFromNet.readObject();
+                    }
+                    catch (IOException | ClassNotFoundException exception)
+                    {
+                        System.out.println("[SatelliteThread.run] Message could not be read from object stream.");
+                        System.exit(1);
+                    }
+                    switch (message.getType()) {
+                        case JOB_REQUEST:
+                            // processing job request
+                            // ...
+                            System.out.println("Content: " + message.getContent());
+                            break;
+
+                        default:
+                            System.err.println("[SatelliteThread.run] Warning: Message type not implemented");
+                }
+                }
         }
     }
 
@@ -151,11 +182,24 @@ public class Satellite extends Thread {
      * otherwise it is loaded dynamically
      */
     public Tool getToolObject(String toolClassString) throws UnknownToolException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        //TODO: fix plox
+        Tool toolObject;
 
-        Tool toolObject = null;
+        if ((toolObject = toolsCache.get(toolClassString)) == null) {
+            // added a server property but might not need
+            String toolString = serverProperties.getProperty(toolClassString);
+            System.out.println("\nTool's Class: " + toolString);
+            if (toolString == null) {
+                throw new UnknownToolException();
+            }
 
-        // ...
-        
+            Class toolClass = classLoader.loadClass(toolString);
+            toolObject = (Tool) toolClass.newInstance();
+            toolsCache.put(toolClassString, toolObject);
+        } else {
+            System.out.println("Tool: \"" + toolClassString + "\" already in Cache");
+        }
+
         return toolObject;
     }
 
