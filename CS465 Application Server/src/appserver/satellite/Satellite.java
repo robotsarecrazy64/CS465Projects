@@ -98,7 +98,7 @@ public class Satellite extends Thread {
 
     @Override
     public void run() {
-
+        Socket socket = null;
         // register this satellite with the SatelliteManager on the server
         // ---------------------------------------------------------------
         // ignore for now
@@ -109,6 +109,7 @@ public class Satellite extends Thread {
         // ...
         try {
             serverSocket = new ServerSocket(satelliteInfo.getPort());
+             socket = serverSocket.accept();
 
         } catch (IOException ioe) {
             System.err.println("IOException" + ioe.getMessage());
@@ -118,6 +119,10 @@ public class Satellite extends Thread {
         // start taking job requests in a server loop
         // ---------------------------------------------------------------
         // ...
+        SatelliteThread serverThread = new SatelliteThread(socket, this);
+        serverThread.start();
+        
+        // TODO: confirmation messages
     }
 
     // inner helper class that is instanciated in above server loop and processes single job requests
@@ -162,16 +167,18 @@ public class Satellite extends Thread {
                         System.out.println("[SatelliteThread.run] Message could not be read from object stream.");
                         System.exit(1);
                     }
-                    switch (message.getType()) {
+                    switch (message.getType()) 
+                    {
                         case JOB_REQUEST:
                             // processing job request
                             // ...
                             System.out.println("Content: " + message.getContent());
+                            
                             break;
 
                         default:
                             System.err.println("[SatelliteThread.run] Warning: Message type not implemented");
-                }
+                    }
                 }
         }
     }
