@@ -189,70 +189,70 @@ public class Satellite extends Thread {
                 exception.printStackTrace();
                 System.exit(1);
             }
-            	// Server runs while boolean is true, indefinitely
-                while(waluigi)
+        	// Server runs while boolean is true, indefinitely
+            while(waluigi)
+            {
+            	// Reading message
+                try
                 {
-                	// Reading message
-                    try
-                    {
-                        message = (Message) readFromNet.readObject();
-                    }
-                    
-                    // Catch exceptions and report them
-                    catch (IOException | ClassNotFoundException exception)
-                    {
-                        System.out.println("[SatelliteThread.run] Message could not be read from object stream.");
-                        System.exit(1);
-                    }
-                    
-                    // Switch to determine what to do based on message type
-                    // Only do something if it is a job request
-                    switch (message.getType()) 
-                    {
-                    	// If job request...
-                        case JOB_REQUEST:
-                            
-                        	// Processing job request
-                            try 
-                            {
-                            	// Create job based on message content
-                                Job getJob = (Job) message.getContent();
-                                
-                                // Report what the tool is in the message
-                                System.out.println("Tool: " + getJob.getToolName());
-                                
-                                //Retrieve the tool that was specified by the job
-                                Tool getTool = getToolObject(getJob.getToolName());
-                                
-                                // Get function results
-                                Object returnToClient = getTool.go(getJob.getParameters());
-                                
-                                // Use tool function to output to client
-                                writeToNet.writeObject(returnToClient);
-                                writeToNet.flush();
-                                
-                                // Close io and job request
-                                readFromNet.close();
-                                writeToNet.close();
-                                jobRequest.close();
-                                
-                                // Set server loop to false to close it until new job
-                                waluigi = false;
-                            }
-                            
-                            // Catch exceptions and report them
-                            catch (Exception ex)
-                            {
-                                      System.out.println("Error occurred: " + ex);
-                            }
-                            
-                            break;
-
-                        // If not a job request, do not carry out the action and report why
-                        default:
-                            System.err.println("[SatelliteThread.run] Warning: Message type not implemented");
-                    }
+                    message = (Message) readFromNet.readObject();
                 }
+                
+                // Catch exceptions and report them
+                catch (IOException | ClassNotFoundException exception)
+                {
+                    System.out.println("[SatelliteThread.run] Message could not be read from object stream.");
+                    System.exit(1);
+                }
+                
+                // Switch to determine what to do based on message type
+                // Only do something if it is a job request
+                switch (message.getType()) 
+                {
+                	// If job request...
+                    case JOB_REQUEST:
+                        
+                    	// Processing job request
+                        try 
+                        {
+                        	// Create job based on message content
+                            Job getJob = (Job) message.getContent();
+                            
+                            // Report what the tool is in the message
+                            System.out.println("Tool: " + getJob.getToolName());
+                            
+                            //Retrieve the tool that was specified by the job
+                            Tool getTool = getToolObject(getJob.getToolName());
+                            
+                            // Get function results
+                            Object returnToClient = getTool.go(getJob.getParameters());
+                            
+                            // Use tool function to output to client
+                            writeToNet.writeObject(returnToClient);
+                            writeToNet.flush();
+                            
+                            // Close io and job request
+                            readFromNet.close();
+                            writeToNet.close();
+                            jobRequest.close();
+                            
+                            // Set server loop to false to close it until new job
+                            waluigi = false;
+                        }
+                        
+                        // Catch exceptions and report them
+                        catch (Exception ex)
+                        {
+                        	System.out.println("Error occurred: " + ex);
+                        }
+                        
+                        break;
+
+                    // If not a job request, do not carry out the action and report why
+                    default:
+                        System.err.println("[SatelliteThread.run] Warning: Message type not implemented");
+                }
+            }
         }
     }
 
