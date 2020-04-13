@@ -39,7 +39,6 @@ public class PlusOneClient implements MessageTypes{
             
             // connect to application server
             Socket server = new Socket(host, port);
-            System.out.println("ppoooopp: " + host + port);
             // hard-coded string of class, aka tool name ... plus one argument
             String classString = "appserver.job.impl.PlusOne";
             Integer number = new Integer(42);
@@ -69,7 +68,7 @@ public class PlusOneClient implements MessageTypes{
         if(args.length == 1) {
             client = new PlusOneClient(args[0]);
         } else {
-            client = new PlusOneClient("../../config/Server.properties");
+            client = new PlusOneClient("../../config/Satellite.Earth.properties");
         }
         client.run();
     }  

@@ -109,18 +109,21 @@ public class Satellite extends Thread {
         // ...
         try {
             serverSocket = new ServerSocket(satelliteInfo.getPort());
-             socket = serverSocket.accept();
-
-        } catch (IOException ioe) {
+            
+            // start taking job requests in a server loop
+            // ---------------------------------------------------------------
+            while(true)
+            {
+                socket = serverSocket.accept(); 
+                new SatelliteThread(socket, this).start();
+            }
+        } 
+        catch (IOException ioe) 
+        {
             System.err.println("IOException" + ioe.getMessage());
             ioe.printStackTrace();
         }
         
-        // start taking job requests in a server loop
-        // ---------------------------------------------------------------
-        // ...
-        SatelliteThread serverThread = new SatelliteThread(socket, this);
-        serverThread.start();
         
         // TODO: confirmation messages
     }
@@ -133,6 +136,7 @@ public class Satellite extends Thread {
         ObjectInputStream readFromNet = null;
         ObjectOutputStream writeToNet = null;
         Message message = null;
+        boolean waluigi = true;
 
         SatelliteThread(Socket jobRequest, Satellite satellite) {
             this.jobRequest = jobRequest;
@@ -147,6 +151,7 @@ public class Satellite extends Thread {
             try {
                 writeToNet = new ObjectOutputStream(jobRequest.getOutputStream());
                 readFromNet = new ObjectInputStream(jobRequest.getInputStream());
+                
             }
             catch (Exception exception)
             {
@@ -154,13 +159,15 @@ public class Satellite extends Thread {
                 exception.printStackTrace();
                 System.exit(1);
             }
-                while(true)
+                while(waluigi)
                 {
                 // reading message
                 // ...
                     try
                     {
                         message = (Message) readFromNet.readObject();
+                        
+                        
                     }
                     catch (IOException | ClassNotFoundException exception)
                     {
@@ -172,8 +179,27 @@ public class Satellite extends Thread {
                         case JOB_REQUEST:
                             // processing job request
                             // ...
-                            System.out.println("Content: " + message.getContent());
-                            
+                            try 
+                            {
+                                Job getJob = (Job) message.getContent();
+                                System.out.println("Tool: " + getJob.getToolName());
+                                Tool getTool = getToolObject(getJob.getToolName());
+                                // get function results
+                                Object returnToClient = getTool.go(getJob.getParameters());
+                                // use tool function
+                                writeToNet.writeObject(returnToClient);
+                                writeToNet.flush();
+                                
+                                readFromNet.close();
+                                writeToNet.close();
+                                
+                                jobRequest.close();
+                                waluigi = false;
+                            }
+                            catch (Exception ex)
+                            {
+                                      System.out.println("Error occurred: " + ex);
+                            }
                             break;
 
                         default:
@@ -192,18 +218,21 @@ public class Satellite extends Thread {
         //TODO: fix plox
         Tool toolObject;
 
-        if ((toolObject = toolsCache.get(toolClassString)) == null) {
-            // added a server property but might not need
-            String toolString = serverProperties.getProperty(toolClassString);
-            System.out.println("\nTool's Class: " + toolString);
-            if (toolString == null) {
+        if ((toolObject = toolsCache.get(toolClassString)) == null) 
+        {
+            System.out.println("\nTool's Class: " + toolClassString);
+            
+            if (toolClassString == null) 
+            {
                 throw new UnknownToolException();
             }
-
-            Class toolClass = classLoader.loadClass(toolString);
+            
+            Class toolClass = classLoader.loadClass(toolClassString);
             toolObject = (Tool) toolClass.newInstance();
             toolsCache.put(toolClassString, toolObject);
-        } else {
+        } 
+        else 
+        {
             System.out.println("Tool: \"" + toolClassString + "\" already in Cache");
         }
 
@@ -212,10 +241,7 @@ public class Satellite extends Thread {
 
     public static void main(String[] args) {
         // start the satellite
-        // change back to:
-        // Satellite satellite = new Satellite(args[0], args[1], args[2]);
-        // after finished developing
-        Satellite satellite = new Satellite("../../config/Satellite.Earth.properties", "../../config/WebServer.properties", "../../config/Server.properties");
+        Satellite satellite = new Satellite(args[0], args[1], args[2]);
         satellite.run();
     }
 }
