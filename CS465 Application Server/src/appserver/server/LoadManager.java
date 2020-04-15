@@ -16,8 +16,12 @@ public class LoadManager {
     }
 
     public void satelliteAdded(String satelliteName) {
-        // add satellite
-        // ...
+        
+        // add satellite name to array list
+        satellites.add(satelliteName);
+        
+        // increment last index of array list
+        lastSatelliteIndex += 1;
     }
 
 

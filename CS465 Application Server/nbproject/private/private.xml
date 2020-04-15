@@ -9,9 +9,11 @@
             <file>file:/D:/School/CS645/CS465Projects/SatelliteServer/src/web/GenericServer.java</file>
             <file>file:/D:/School/CS645/CS465Projects/SatelliteServer/src/appserver/job/Job.java</file>
             <file>file:/D:/School/CS645/CS465Projects/SatelliteServer/src/appserver/satellite/HTTPClassLoader.java</file>
+            <file>file:/D:/School/CS645/CS465Projects/SatelliteServer/src/appserver/server/Server.java</file>
             <file>file:/D:/School/CS645/CS465Projects/SatelliteServer/src/appserver/comm/MessageTypes.java</file>
             <file>file:/D:/School/CS645/CS465Projects/SatelliteServer/src/appserver/comm/Message.java</file>
             <file>file:/D:/School/CS645/CS465Projects/SatelliteServer/src/appserver/satellite/Satellite.java</file>
+            <file>file:/D:/School/CS645/CS465Projects/SatelliteServer/src/appserver/server/SatelliteManager.java</file>
             <file>file:/D:/School/CS645/CS465Projects/SatelliteServer/src/appserver/job/Tool.java</file>
         </group>
     </open-files>
