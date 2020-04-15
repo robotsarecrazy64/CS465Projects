@@ -26,11 +26,11 @@ import java.io.PrintStream;
  * calling the callback method of tool a implementation, loading the tool's code dynamically over a network
  * or locally from the cache, if a tool got executed before.
  *
- * @author Dr.-Ing. Wolf-Dieter Otte, Jessisa Smith, John Jacobelli, Jesse Rodriguez
+ * @author Dr.-Ing. Wolf-Dieter Otte@author Dr.-Ing. Wolf-Dieter Otte, Jessica Smith, John Jacobelli, Jesse Rodriguez
  */
 public class Satellite extends Thread {
 
-	// Create our variables
+    // Create our variables
     private ConnectivityInfo satelliteInfo = new ConnectivityInfo();
     private ConnectivityInfo serverInfo = new ConnectivityInfo();
     private HTTPClassLoader classLoader = null;
@@ -45,20 +45,19 @@ public class Satellite extends Thread {
     static ServerSocket serverSocket;
     static int port;
 
-    /*
+     /*
      * Constructor for the class, reads in all the config files and deals with them
      * appropriately
      */
-    public Satellite(String satellitePropertiesFile, String classLoaderPropertiesFile, String serverPropertiesFile) 
-    {
+    public Satellite(String satellitePropertiesFile, String classLoaderPropertiesFile, String serverPropertiesFile) {
 
         // Read this satellite's properties and populate satelliteInfo object,
         // which later on will be sent to the server
+        
         super(satellitePropertiesFile);
 
-        try 
-        {
-        	// Initialize static variables with properties read 
+        try {
+            // Initialize static variables with properties read 
             // Need to pass info into satelliteInfo object
             satelliteProperties = new PropertyHandler(satellitePropertiesFile);
             satelliteInfo.setName(satelliteProperties.getProperty("NAME"));
@@ -66,19 +65,16 @@ public class Satellite extends Thread {
             
             // Report that port is open for satellite
             System.out.println("Satellite " + satelliteInfo.getName() + " has port #: " + satelliteInfo.getPort());
-        } 
-        
-        // Catch exceptions and report them
-        catch (Exception e) 
-        {
+        } catch (Exception e) {
+            
+            // Catch exceptions and report them
             System.err.println("Properties file " + satellitePropertiesFile + " not found, exiting ...");
             System.exit(1);
         }
         
-        // Read properties of the application server and populate serverInfo object
+         // Read properties of the application server and populate serverInfo object
         // Other than satellites, the application server doesn't have a human-readable name, so leave it out
-        try 
-        {
+        try {
             // Initialize static variables with properties read 
             // Need to pass info into serverInfo object
             serverProperties = new PropertyHandler(serverPropertiesFile);
@@ -87,18 +83,15 @@ public class Satellite extends Thread {
             
             // Report that port is open for application server
             System.out.println("Application server has host: " + serverInfo.getHost() + " and has port #: " + serverInfo.getPort());
-        } 
-        
-        // Catch exceptions and report them
-        catch (Exception e) 
-        {
+        } catch (Exception e) {
+            
+            // Catch exceptions and report them
             System.err.println("Properties file " + serverPropertiesFile + " not found, exiting ...");
             System.exit(1);
         }
         
         // Read properties of the code server and create class loader
-        try 
-        {
+        try {
             // Initialize static variables with properties read 
             // Need to pass info into serverInfo object
             classLoaderProperties = new PropertyHandler(classLoaderPropertiesFile);
@@ -108,11 +101,9 @@ public class Satellite extends Thread {
             
             // Report that port is open for class loader
             System.out.println("Class loader has host: " + classLoaderProperties.getProperty("HOST") + " and has port #: " + Integer.parseInt(classLoaderProperties.getProperty("PORT")));
-        } 
-        
-        // Catch exceptions and report them
-        catch (Exception e) 
-        {
+        } catch (Exception e) {
+            
+            // Catch exceptions and report them
             System.err.println("Properties file " + classLoaderPropertiesFile + " not found, exiting ...");
             System.exit(1);
         }
@@ -122,33 +113,33 @@ public class Satellite extends Thread {
     }
 
     @Override
-    public void run() 
-    {
+    public void run() {
         Socket socket = null;
+        // register this satellite with the SatelliteManager on the server
+        // ---------------------------------------------------------------
+        
         
         // Create server socket for satellite server to use
-        try 
-        {
-        	// Create server socket and report to user
+        try {
+            
+            // Create server socket and report to user
             serverSocket = new ServerSocket(satelliteInfo.getPort());
             System.out.println("[Satellite.run] Creating server socket");
             
             // Start taking job requests in a server loop
             while(true)
             {
-            	// Accept socket and report to user
+                // Accept socket and report to user
                 socket = serverSocket.accept(); 
                 System.out.println("[Satellite.run] Socket accepted, starting satellite thread...");
                 
                 new SatelliteThread(socket, this).start();
             }
-        }
-        
+        } 
         // Catch exceptions and report them
         catch (IOException ioe) 
         {
-        	System.out.println("[Satellite.run] Socket could not be created/accepted");
-            System.err.println("IOException" + ioe.getMessage());
+            System.out.println("[Satellite.run] Socket could not be created/accepted");
             ioe.printStackTrace();
         }
     }
@@ -180,79 +171,75 @@ public class Satellite extends Thread {
             {
                 writeToNet = new ObjectOutputStream(jobRequest.getOutputStream());
                 readFromNet = new ObjectInputStream(jobRequest.getInputStream());
+                
             }
-            
             // Catch exceptions and report them
             catch (Exception exception)
             {
-                System.out.println("[SatelliteThread.run] Failed to open object streams");
+                 System.out.println("[SatelliteThread.run] Failed to open object streams");
                 exception.printStackTrace();
                 System.exit(1);
             }
-        	// Server runs while boolean is true, indefinitely
-            while(waluigi)
-            {
-            	// Reading message
-                try
+                // Server runs while boolean is true, indefinitely
+                while(waluigi)
                 {
-                    message = (Message) readFromNet.readObject();
+                // Reading message
+                    try
+                    {
+                        // Reading message
+                        message = (Message) readFromNet.readObject();
+                    }
+                    // Catch exceptions and report them
+                    catch (IOException | ClassNotFoundException exception)
+                    {
+                        System.out.println("[SatelliteThread.run] Message could not be read from object stream.");
+                        System.exit(1);
+                    }
+                    // Switch to determine what to do based on message type
+                    // Only do something if it is a job request
+                    switch (message.getType()) 
+                    {
+                        // If job request...
+                        case JOB_REQUEST:
+                            // Processing job request
+                            try 
+                            {
+                                // Create job based on message content
+                                Job getJob = (Job) message.getContent();
+                                
+                                // Report what the tool is in the message
+                                System.out.println("Tool: " + getJob.getToolName());
+                                
+                                //Retrieve the tool that was specified by the job
+                                Tool getTool = getToolObject(getJob.getToolName());
+                                
+                                // Get function results
+                                Object returnToClient = getTool.go(getJob.getParameters());
+                                
+                                // Use tool function to output to client
+                                writeToNet.writeObject(returnToClient);
+                                writeToNet.flush();
+                                
+                                // Close io and job request
+                                readFromNet.close();
+                                writeToNet.close();
+                                jobRequest.close();
+                                
+                                // Set server loop to false to close it until new job
+                                waluigi = false;
+                            }
+                            // Catch exceptions and report them
+                            catch (Exception ex)
+                            {
+                                      System.out.println("Error occurred: " + ex);
+                            }
+                            
+                            break;
+                        // If not a job request, do not carry out the action and report why
+                        default:
+                            System.err.println("[SatelliteThread.run] Warning: Message type not implemented");
+                    }
                 }
-                
-                // Catch exceptions and report them
-                catch (IOException | ClassNotFoundException exception)
-                {
-                    System.out.println("[SatelliteThread.run] Message could not be read from object stream.");
-                    System.exit(1);
-                }
-                
-                // Switch to determine what to do based on message type
-                // Only do something if it is a job request
-                switch (message.getType()) 
-                {
-                	// If job request...
-                    case JOB_REQUEST:
-                        
-                    	// Processing job request
-                        try 
-                        {
-                        	// Create job based on message content
-                            Job getJob = (Job) message.getContent();
-                            
-                            // Report what the tool is in the message
-                            System.out.println("Tool: " + getJob.getToolName());
-                            
-                            //Retrieve the tool that was specified by the job
-                            Tool getTool = getToolObject(getJob.getToolName());
-                            
-                            // Get function results
-                            Object returnToClient = getTool.go(getJob.getParameters());
-                            
-                            // Use tool function to output to client
-                            writeToNet.writeObject(returnToClient);
-                            writeToNet.flush();
-                            
-                            // Close io and job request
-                            readFromNet.close();
-                            writeToNet.close();
-                            jobRequest.close();
-                            
-                            // Set server loop to false to close it until new job
-                            waluigi = false;
-                        }
-                        
-                        // Catch exceptions and report them
-                        catch (Exception ex)
-                        {
-                        	System.out.println("Error occurred: " + ex);
-                        }
-                        
-                        break;
-
-                    // If not a job request, do not carry out the action and report why
-                    default:
-                        System.err.println("[SatelliteThread.run] Warning: Message type not implemented");
-                }
-            }
         }
     }
 
@@ -270,8 +257,8 @@ public class Satellite extends Thread {
         // If not, enter if statement
         if ((toolObject = toolsCache.get(toolClassString)) == null) 
         {
-        	// Report to user the tool
-            System.out.println("\n[Satellite.getToolObject] Tool's Class: " + toolClassString);
+            // Report to user the tool
+            System.out.println("\nTool's Class: " + toolClassString);
             
             // Make sure that the tool being requested isn't null, throw exception if so
             if (toolClassString == null) 
