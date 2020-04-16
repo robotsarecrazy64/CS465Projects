@@ -3,6 +3,7 @@ package appserver.server;
 import appserver.comm.Message;
 import appserver.job.Job;
 import appserver.job.Tool;
+//import appserver.satellite.Satellite.SatelliteThread;
 
 import static appserver.comm.MessageTypes.JOB_REQUEST;
 import static appserver.comm.MessageTypes.REGISTER_SATELLITE;
@@ -70,6 +71,8 @@ public class Server {
         Socket client = null;
         ObjectInputStream readFromNet = null;
         ObjectOutputStream writeToNet = null;
+        ObjectInputStream readFromNetServer = null;
+        ObjectOutputStream writeToNetServer = null;
         Message message = null;
 
         private ServerThread(Socket client) {
@@ -78,7 +81,7 @@ public class Server {
 
         @Override
         public void run() {
-            // set up object streams and read message
+            // set up object streams and read message - OTTE
         	// Set up object input/output streams
             try 
             {
@@ -104,21 +107,22 @@ public class Server {
             catch (IOException | ClassNotFoundException exception)
             {
                 System.out.println("[ServerThread.run] Message could not be read from object stream.");
+                exception.printStackTrace();
                 System.exit(1);
             }
             
             // process message
             switch (message.getType()) {
                 case REGISTER_SATELLITE:
-                    // read satellite info
+                    // read satellite info - OTTE
                     ConnectivityInfo satelliteInfo = (ConnectivityInfo) message.getContent();
                     
-                    // register satellite
+                    // register satellite - OTTE
                     synchronized (Server.satelliteManager) {
                     	Server.satelliteManager.registerSatellite(satelliteInfo);
                     }
 
-                    // add satellite to loadManager
+                    // add satellite to loadManager - OTTE
                     synchronized (Server.loadManager) {
                     	Server.loadManager.satelliteAdded(satelliteInfo.getName());
                     }
@@ -127,26 +131,76 @@ public class Server {
 
                 case JOB_REQUEST:
                     System.err.println("\n[ServerThread.run] Received job request");
-
+                    
+                    ConnectivityInfo satelliteConInfo = (ConnectivityInfo) message.getContent();
                     String satelliteName = null;
-                    synchronized (Server.loadManager) {
-                        // get next satellite from load manager
-                        // ...
+                    
+                    synchronized (Server.loadManager) 
+                    {
+                        // get next satellite from load manager - OTTE
+                        try
+                        {
+                            // Get satellite name
+                        	satelliteName = loadManager.nextSatellite();
+                        }
                         
-                        // get connectivity info for next satellite from satellite manager
-                        // ...
+                        // Catch exceptions and report them
+                        catch (Exception exception)
+                        {
+                            System.out.println("[ServerThread.run] Message could get next satellite.");
+                            exception.printStackTrace();
+                            System.exit(1);
+                        }
+                        
+                        // get connectivity info for next satellite from satellite manager - OTTE
+                        ConnectivityInfo satelliteConnectInfo = satelliteManager.getSatelliteForName(satelliteName);
+
+
+	                    Socket satellite = null;
+	                    // connect to satellite - OTTE
+		                // Create server socket for satellite server to use
+	                    
+	                    try 
+	                    {
+	                        // Create server socket and report to user
+	                        serverSocket = new ServerSocket(satelliteConnectInfo.getPort());
+	                        System.out.println("[ServerThread.run] Creating server socket");
+	                        
+		                    // Accept socket and report to user
+		                	satellite = serverSocket.accept(); 
+		                    System.out.println("[ServerThread.run] Socket accepted, connecting to server ...");
+		                    
+		                    writeToNetServer = new ObjectOutputStream(satellite.getOutputStream());
+		                    readFromNetServer = new ObjectInputStream(satellite.getInputStream());
+	                    }
+	                    
+	                    // Catch exceptions and report them
+	                    catch (IOException exception) 
+	                    {
+	                        System.out.println("[ServerThread.run] Socket could not be created/accepted");
+	                        exception.printStackTrace();
+	                        exception.printStackTrace();
+	                    }
+	
+	                    // open object streams,
+	                    // forward message (as is) to satellite,
+	                    // receive result from satellite and
+	                    // write result back to client
+	                    try 
+	                    {
+	                    	writeToNetServer.writeObject(message);
+	                    	writeToNet.writeObject(readFromNetServer.read());
+	                    }
+	                    
+	                    // Catch exceptions and report them
+	                    catch (IOException exception) 
+	                    {
+	                        System.out.println("[ServerThread.run] Socket could not be created/accepted");
+	                        exception.printStackTrace();
+	                        exception.printStackTrace();
+	                    }
                     }
-
-                    Socket satellite = null;
-                    // connect to satellite
-                    // ...
-
-                    // open object streams,
-                    // forward message (as is) to satellite,
-                    // receive result from satellite and
-                    // write result back to client
-                    // ...
-
+                    
                     break;
 
                 default:
