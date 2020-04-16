@@ -18,10 +18,11 @@ public class SatelliteManager {
     }
 
     public void registerSatellite(ConnectivityInfo satelliteInfo) {
-        // ...
+        satellites.put(satelliteInfo.getName(), satelliteInfo);
     }
 
     public ConnectivityInfo getSatelliteForName(String satelliteName) {
-        // ..
+    	//Enumeration<String> enumeration = satellites.keys();
+        return satellites.get(satelliteName);
     }
 }

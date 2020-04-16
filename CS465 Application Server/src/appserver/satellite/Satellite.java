@@ -36,7 +36,7 @@ public class Satellite extends Thread {
     private HTTPClassLoader classLoader = null;
     private Hashtable<String, Tool> toolsCache = null;
     
-    // Propery files that will be used
+    // Property files that will be used
     Properties satelliteProperties;
     Properties serverProperties;
     Properties classLoaderProperties;
@@ -53,7 +53,6 @@ public class Satellite extends Thread {
 
         // Read this satellite's properties and populate satelliteInfo object,
         // which later on will be sent to the server
-        
         super(satellitePropertiesFile);
 
         try {
@@ -176,7 +175,7 @@ public class Satellite extends Thread {
             // Catch exceptions and report them
             catch (Exception exception)
             {
-                 System.out.println("[SatelliteThread.run] Failed to open object streams");
+                System.out.println("[SatelliteThread.run] Failed to open object streams");
                 exception.printStackTrace();
                 System.exit(1);
             }

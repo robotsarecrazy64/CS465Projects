@@ -1,6 +1,9 @@
 package appserver.server;
 
 import appserver.comm.Message;
+import appserver.job.Job;
+import appserver.job.Tool;
+
 import static appserver.comm.MessageTypes.JOB_REQUEST;
 import static appserver.comm.MessageTypes.REGISTER_SATELLITE;
 import appserver.comm.ConnectivityInfo;
@@ -22,14 +25,37 @@ public class Server {
     static SatelliteManager satelliteManager = null;
     static LoadManager loadManager = null;
     static ServerSocket serverSocket = null;
-
+    private ConnectivityInfo serverInfo = new ConnectivityInfo();
+    
+    // Property files that will be used
+    Properties serverProperties;
+    
     public Server(String serverPropertiesFile) {
 
         // create satellite manager and load manager
-        // ...
+        satelliteManager = new SatelliteManager();
+        loadManager = new LoadManager();
         
         // read server properties and create server socket
-        // ...
+        try 
+        {
+	        // Initialize static variables with properties read 
+	        // Need to pass info into serverInfo object
+	        serverProperties = new PropertyHandler(serverPropertiesFile);
+	        serverInfo.setHost(serverProperties.getProperty("HOST"));
+	        serverInfo.setPort(Integer.parseInt(serverProperties.getProperty("PORT")));
+            
+            // Report that port is open for application server
+            System.out.println("Application server has host: " + serverInfo.getHost() + " and has port #: " + serverInfo.getPort());
+        } 
+        
+        catch (Exception e) 
+        {
+            
+            // Catch exceptions and report them
+            System.err.println("Properties file " + serverPropertiesFile + " not found, exiting ...");
+            System.exit(1);
+        }
     }
 
     public void run() {
@@ -53,23 +79,48 @@ public class Server {
         @Override
         public void run() {
             // set up object streams and read message
-            // ...
-
+        	// Set up object input/output streams
+            try 
+            {
+                writeToNet = new ObjectOutputStream(client.getOutputStream());
+                readFromNet = new ObjectInputStream(client.getInputStream());
+            }
+            
+            // Catch exceptions and report them
+            catch (Exception exception)
+            {
+                System.out.println("[ServerThread.run] Failed to open object streams");
+                exception.printStackTrace();
+                System.exit(1);
+            }
+            
+            try
+            {
+                // Reading message
+                message = (Message) readFromNet.readObject();
+            }
+            
+            // Catch exceptions and report them
+            catch (IOException | ClassNotFoundException exception)
+            {
+                System.out.println("[ServerThread.run] Message could not be read from object stream.");
+                System.exit(1);
+            }
             
             // process message
             switch (message.getType()) {
                 case REGISTER_SATELLITE:
                     // read satellite info
-                    // ...
+                    ConnectivityInfo satelliteInfo = (ConnectivityInfo) message.getContent();
                     
                     // register satellite
                     synchronized (Server.satelliteManager) {
-                        // ...
+                    	Server.satelliteManager.registerSatellite(satelliteInfo);
                     }
 
                     // add satellite to loadManager
                     synchronized (Server.loadManager) {
-                        // ...
+                    	Server.loadManager.satelliteAdded(satelliteInfo.getName());
                     }
 
                     break;

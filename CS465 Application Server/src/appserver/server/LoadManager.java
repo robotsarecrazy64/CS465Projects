@@ -31,7 +31,6 @@ public class LoadManager {
         
         synchronized (satellites) {
             // implement policy that returns the satellite name according to a round robin methodology
-            // ...
         }
 
         return // ... name of satellite who is supposed to take job
