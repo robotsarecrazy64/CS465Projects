@@ -1,6 +1,7 @@
 package appserver.server;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 /**
  *
@@ -27,13 +28,14 @@ public class LoadManager {
 
     public String nextSatellite() throws Exception {
         
-        int numberSatellites;
-        
+        int numberSatellites = lastSatelliteIndex + 1;
+        String satelliteReturn = "";
+        ListIterator iter = satellites.listIterator();
         synchronized (satellites) {
             // implement policy that returns the satellite name according to a round robin methodology
+            satelliteReturn = iter.toString();
         }
 
-        return // ... name of satellite who is supposed to take job
-        ;
+        return satelliteReturn; // name of satellite who is supposed to take job
     }
 }
