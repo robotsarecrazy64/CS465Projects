@@ -11,6 +11,7 @@ public class LoadManager {
 
     static ArrayList satellites = null;
     static int lastSatelliteIndex = -1;
+    static int currentSatellite = 0;
 
     public LoadManager() {
         satellites = new ArrayList<String>();
@@ -26,16 +27,29 @@ public class LoadManager {
     }
 
 
-    public String nextSatellite() throws Exception {
-/*        
-        int numberSatellites = lastSatelliteIndex + 1;
-        String satelliteReturn = "";
-        ListIterator iter = satellites.listIterator();
-        synchronized (satellites) {
-            // implement policy that returns the satellite name according to a round robin methodology
-            satelliteReturn = iter.toString();
+    public String nextSatellite() throws Exception 
+    {
+    	// Declare variables
+        String nextSatellite;
+        
+        synchronized(satellites)
+        {
+        	// Set next satellite's name
+	        nextSatellite = satellites.get(currentSatellite).toString();
+	        
+	        // Keep satellite counter on track, make sure it looks
+	        if(currentSatellite == lastSatelliteIndex)
+	        {
+	        	currentSatellite = 0;
+	        }
+	        
+	        // Increase index to next satellite if not at all
+	        else
+	        {
+	        	currentSatellite++;
+	        }
         }
-*/
-        return satellites.get(0).toString(); // name of satellite who is supposed to take job
+        
+        return nextSatellite; // name of satellite who is supposed to take job
     }
 }
