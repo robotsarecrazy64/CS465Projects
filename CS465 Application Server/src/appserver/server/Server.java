@@ -4,6 +4,7 @@ import appserver.comm.Message;
 import appserver.job.Job;
 import appserver.job.Tool;
 //import appserver.satellite.Satellite.SatelliteThread;
+//import appserver.satellite.Satellite.SatelliteThread;
 
 import static appserver.comm.MessageTypes.JOB_REQUEST;
 import static appserver.comm.MessageTypes.REGISTER_SATELLITE;
@@ -25,7 +26,7 @@ public class Server {
     // Singleton objects - there is only one of them. For simplicity, this is not enforced though ...
     static SatelliteManager satelliteManager = null;
     static LoadManager loadManager = null;
-    static ServerSocket serverSocket = null;
+    public static ServerSocket serverSocket = null;
     private ConnectivityInfo serverInfo = new ConnectivityInfo();
     
     // Property files that will be used
@@ -60,9 +61,31 @@ public class Server {
     }
 
     public void run() {
-    // serve clients in server loop ...
-    // when a request comes in, a ServerThread object is spawned
-    // ...
+	    // serve clients in server loop ...
+	    // when a request comes in, a ServerThread object is spawned
+		try 
+		{
+	            
+	        // Create server socket and report to user
+	        serverSocket = new ServerSocket(serverInfo.getPort());
+	        System.out.println("[Server.run] Creating server socket");
+	        
+	        // Start taking job requests in a server loop
+	        while(true)
+	        {
+	            // Accept socket and report to user
+	            Socket socket = serverSocket.accept(); 
+	            System.out.println("[Server.run] Socket accepted, starting server thread...");
+	            
+	            new ServerThread(socket).start();
+	        }
+	    } 
+	    // Catch exceptions and report them
+	    catch (IOException ioe) 
+	    {
+	        System.out.println("[Server.run] Socket could not be created/accepted");
+	        ioe.printStackTrace();
+	    }
     }
 
     // objects of this helper class communicate with satellites or clients
@@ -71,8 +94,8 @@ public class Server {
         Socket client = null;
         ObjectInputStream readFromNet = null;
         ObjectOutputStream writeToNet = null;
-        ObjectInputStream readFromNetServer = null;
-        ObjectOutputStream writeToNetServer = null;
+        ObjectInputStream readFromSatellite = null;
+        ObjectOutputStream writeToSatellite = null;
         Message message = null;
 
         private ServerThread(Socket client) {
@@ -119,12 +142,14 @@ public class Server {
                     
                     // register satellite - OTTE
                     synchronized (Server.satelliteManager) {
-                    	Server.satelliteManager.registerSatellite(satelliteInfo);
+                    	satelliteManager.registerSatellite(satelliteInfo);
+                    	System.out.println("[ServerThread.run] Satellite registered to satelliteManager.");
                     }
 
                     // add satellite to loadManager - OTTE
                     synchronized (Server.loadManager) {
-                    	Server.loadManager.satelliteAdded(satelliteInfo.getName());
+                    	loadManager.satelliteAdded(satelliteInfo.getName());
+                    	System.out.println("[ServerThread.run] Satellite added to loadManager.");
                     }
 
                     break;
@@ -132,7 +157,7 @@ public class Server {
                 case JOB_REQUEST:
                     System.err.println("\n[ServerThread.run] Received job request");
                     
-                    ConnectivityInfo satelliteConInfo = (ConnectivityInfo) message.getContent();
+                    //Job satelliteJob = (Job) message.getContent();
                     String satelliteName = null;
                     
                     synchronized (Server.loadManager) 
@@ -142,36 +167,33 @@ public class Server {
                         {
                             // Get satellite name
                         	satelliteName = loadManager.nextSatellite();
+                        	System.out.println("[ServerThread.run] Sat name: " + satelliteName);
                         }
                         
                         // Catch exceptions and report them
                         catch (Exception exception)
                         {
-                            System.out.println("[ServerThread.run] Message could get next satellite.");
+                            System.out.println("[ServerThread.run] Message could not get next satellite.");
                             exception.printStackTrace();
                             System.exit(1);
                         }
                         
                         // get connectivity info for next satellite from satellite manager - OTTE
                         ConnectivityInfo satelliteConnectInfo = satelliteManager.getSatelliteForName(satelliteName);
+                        System.out.println("[ServerThread.run] ConnectivityInfo successfully obtained");
 
 
 	                    Socket satellite = null;
 	                    // connect to satellite - OTTE
 		                // Create server socket for satellite server to use
-	                    
 	                    try 
 	                    {
 	                        // Create server socket and report to user
-	                        serverSocket = new ServerSocket(satelliteConnectInfo.getPort());
-	                        System.out.println("[ServerThread.run] Creating server socket");
-	                        
-		                    // Accept socket and report to user
-		                	satellite = serverSocket.accept(); 
-		                    System.out.println("[ServerThread.run] Socket accepted, connecting to server ...");
+	                    	satellite = new Socket(satelliteConnectInfo.getHost(), satelliteConnectInfo.getPort());
+	                    	System.out.println("[ServerThread.run] Satellite successfully connected to");
 		                    
-		                    writeToNetServer = new ObjectOutputStream(satellite.getOutputStream());
-		                    readFromNetServer = new ObjectInputStream(satellite.getInputStream());
+		                    writeToSatellite = new ObjectOutputStream(satellite.getOutputStream());
+		                    readFromSatellite = new ObjectInputStream(satellite.getInputStream());
 	                    }
 	                    
 	                    // Catch exceptions and report them
@@ -188,12 +210,15 @@ public class Server {
 	                    // write result back to client
 	                    try 
 	                    {
-	                    	writeToNetServer.writeObject(message);
-	                    	writeToNet.writeObject(readFromNetServer.read());
+	                    	System.out.println("[ServerThread.run] Reading message...");
+	                    	// write to satellite stream
+	                    	writeToSatellite.writeObject(message);
+	                    	// write to server stream
+	                    	writeToNet.writeObject(readFromSatellite.readObject());
 	                    }
 	                    
 	                    // Catch exceptions and report them
-	                    catch (IOException exception) 
+	                    catch (ClassNotFoundException | IOException exception) 
 	                    {
 	                        System.out.println("[ServerThread.run] Socket could not be created/accepted");
 	                        exception.printStackTrace();
@@ -216,7 +241,7 @@ public class Server {
         if(args.length == 1) {
             server = new Server(args[0]);
         } else {
-            server = new Server("../../config/Server.properties");
+            server = new Server("/config/Server.properties");
         }
         server.run();
     }

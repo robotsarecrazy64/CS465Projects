@@ -44,6 +44,7 @@ public class Satellite extends Thread {
     
     // socket info
     static ServerSocket serverSocket;
+    //static ServerSocket serverServerSocket;
     static int port;
 
      /*
@@ -115,23 +116,33 @@ public class Satellite extends Thread {
     @Override
     public void run() {
         Socket socket = null;
-        // register this satellite with the SatelliteManager on the server
-        new SatelliteManager().registerSatellite(satelliteInfo);
-        
+        //Socket serversSocket = null;
         
         // Create server socket for satellite server to use
         try {
             
             // Create server socket and report to user
             serverSocket = new ServerSocket(satelliteInfo.getPort());
-            System.out.println("[Satellite.run] Creating server socket");
+            System.out.println("[Satellite.run] Creating server socket for satellite");
+            
+            Socket server = new Socket(serverInfo.getHost(), serverInfo.getPort());
+            System.out.println("[Satellite.run] Connecting to server's socket");
+            
+            // register this satellite with the SatelliteManager on the server
+            ObjectOutputStream writeToServer = new ObjectOutputStream(server.getOutputStream());
+            writeToServer.writeObject(new Message(REGISTER_SATELLITE, satelliteInfo));
             
             // Start taking job requests in a server loop
             while(true)
             {
                 // Accept socket and report to user
-                socket = serverSocket.accept(); 
+                socket = serverSocket.accept();
                 System.out.println("[Satellite.run] Socket accepted, starting satellite thread...");
+                
+                //serversSocket = serverServerSocket.accept();
+                //System.out.println("[Satellite.run] Socket for server accepted.");
+                
+                
                 
                 new SatelliteThread(socket, this).start();
             }
@@ -214,16 +225,17 @@ public class Satellite extends Thread {
                                 Tool getTool = getToolObject(getJob.getToolName());
                                 
                                 // Get function results
-                                Object returnToClient = getTool.go(getJob.getParameters());
+                                Object returnToClient = (Object) getTool.go(getJob.getParameters());
                                 
                                 // Use tool function to output to client
                                 writeToNet.writeObject(returnToClient);
+                                System.out.println("[SatelliteThread.run] Message sent to server");
                                 writeToNet.flush();
                                 
                                 // Close io and job request
-                                readFromNet.close();
-                                writeToNet.close();
-                                jobRequest.close();
+                                //readFromNet.close();
+                                //writeToNet.close();
+                                //jobRequest.close();
                                 
                                 // Set server loop to false to close it until new job
                                 waluigi = false;

@@ -68,7 +68,7 @@ public class FibonacciClient extends Thread{
             // for simplicity, the result is not encapsulated in a message
             ObjectInputStream readFromNet = new ObjectInputStream(server.getInputStream());
             Integer result = (Integer) readFromNet.readObject();
-            System.out.println("RESULT: " + result);
+            System.out.println("Result of Fibonacci number " + fibNum + " : " + result);
         } 
         
         catch (Exception ex) 
@@ -81,9 +81,9 @@ public class FibonacciClient extends Thread{
 
     public static void main(String[] args) {
         
-        for(int iter = 46; iter > 0; iter--)
+        for(int iter = 42; iter > 0; iter--)
         {
-            (new FibonacciClient("../../config/Server.properties", iter)).start();
+            (new FibonacciClient("/config/Server.properties", iter)).start();
         }
     }  
     

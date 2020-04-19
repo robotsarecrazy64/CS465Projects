@@ -27,7 +27,7 @@ public class LoadManager {
 
 
     public String nextSatellite() throws Exception {
-        
+/*        
         int numberSatellites = lastSatelliteIndex + 1;
         String satelliteReturn = "";
         ListIterator iter = satellites.listIterator();
@@ -35,7 +35,7 @@ public class LoadManager {
             // implement policy that returns the satellite name according to a round robin methodology
             satelliteReturn = iter.toString();
         }
-
-        return satelliteReturn; // name of satellite who is supposed to take job
+*/
+        return satellites.get(0).toString(); // name of satellite who is supposed to take job
     }
 }
