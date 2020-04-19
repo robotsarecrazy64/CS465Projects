@@ -3,6 +3,7 @@ package appserver.satellite;
 import appserver.job.Job;
 import appserver.comm.ConnectivityInfo;
 import appserver.job.UnknownToolException;
+import appserver.server.SatelliteManager;
 import appserver.comm.Message;
 import static appserver.comm.MessageTypes.JOB_REQUEST;
 import static appserver.comm.MessageTypes.REGISTER_SATELLITE;
@@ -115,7 +116,7 @@ public class Satellite extends Thread {
     public void run() {
         Socket socket = null;
         // register this satellite with the SatelliteManager on the server
-        // ---------------------------------------------------------------
+        new SatelliteManager().registerSatellite(satelliteInfo);
         
         
         // Create server socket for satellite server to use
@@ -230,7 +231,7 @@ public class Satellite extends Thread {
                             // Catch exceptions and report them
                             catch (Exception ex)
                             {
-                                      System.out.println("Error occurred: " + ex);
+                            	System.out.println("Error occurred: " + ex);
                             }
                             
                             break;

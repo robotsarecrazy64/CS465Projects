@@ -21,14 +21,15 @@ import utils.PropertyHandler;
  *
  * @author Jessica
  */
-public class FibonacciClient {
+public class FibonacciClient extends Thread{
     
     String host = null;
     int port;
+    Integer fibNum;
 
     Properties properties;
 
-    public FibonacciClient(String serverPropertiesFile, int fibNum) 
+    public FibonacciClient(String serverPropertiesFile, int fibNumParam) 
     {
         try 
         {
@@ -37,6 +38,7 @@ public class FibonacciClient {
             System.out.println("[FibonacciClient.FibonacciClient] Host: " + host);
             port = Integer.parseInt(properties.getProperty("PORT"));
             System.out.println("[FibonacciClient.FibonacciClient] Port: " + port);
+            fibNum = fibNumParam;
         } 
         catch (Exception ex)
         {
@@ -48,25 +50,33 @@ public class FibonacciClient {
     {
         try { 
             
+            // connect to application server
+            Socket server = new Socket(host, port);
+            // hard-coded string of class, aka tool name ... plus one argument
+            String classString = "appserver.job.impl.Fibonacci";
+            //Integer number = new Integer(42);
             
+            // create job and job request message
+            Job job = new Job(classString, fibNum);
+            Message message = new Message(JOB_REQUEST, job);
+            
+            // sending job out to the application server in a message
+            ObjectOutputStream writeToNet = new ObjectOutputStream(server.getOutputStream());
+            writeToNet.writeObject(message);
+            
+            // reading result back in from application server
+            // for simplicity, the result is not encapsulated in a message
+            ObjectInputStream readFromNet = new ObjectInputStream(server.getInputStream());
+            Integer result = (Integer) readFromNet.readObject();
+            System.out.println("RESULT: " + result);
         } 
+        
         catch (Exception ex) 
         {
-            System.err.println("[PlusOneClient.run] Error occurred");
+            System.err.println("[FibonacciClient.run] Error occurred");
             ex.printStackTrace();
         }
     }
-        
-    private class FibonacciClientThread extends Thread 
-    {
-        
-
-        @Override
-        public void run() 
-        {
-
-        }
-        }
    
 
     public static void main(String[] args) {
